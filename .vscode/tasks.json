@@ -1,0 +1,134 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/StarWars.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "publish",
+                "${workspaceFolder}/StarWars.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "watch",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "watch",
+                "run",
+                "--project",
+                "${workspaceFolder}/StarWars.csproj"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Generate Character",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "aspnet-codegenerator",
+                "controller",
+                "-f",
+                "-name",
+                "CharactersController",
+                "-m",
+                "Character",
+                "-dc",
+                "StarWarsContext",
+                "--relativeFolderPath",
+                "Controllers",
+                "--useDefaultLayout",
+                "--referenceScriptLibraries",
+                "-sqlite"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Prepare entities",
+            "dependsOn": ["Generate Character"],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean Migrations",
+            "command": "powershell",
+            "type": "process",
+            "args": [
+                "if (Test-Path ${workspaceFolder}/Migrations) { rm ${workspaceFolder}/Migrations -r }"
+            ]
+        },
+        {
+            "label": "Create Migrations",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "ef",
+                "migrations",
+                "add",
+                "InitialCreate"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Prepare migrations",
+            "dependsOn": ["Clean Migrations", "Create Migrations"],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
+            "label": "Drop Database",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "ef",
+                "database",
+                "drop",
+                "-f",
+                "--no-build"
+            ]
+        },
+        {
+            "label": "Update Database",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "ef",
+                "database",
+                "update"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Prepare database",
+            "dependsOn": ["Drop Database", "Update Database"],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
+            "label": "Prepare to run",
+            "dependsOn": [
+                "Generate Entity Controller",
+                "Create Migrations",
+                "Update Database"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        }
+    ]
+}

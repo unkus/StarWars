@@ -1,0 +1,126 @@
+@model StarWars.Models.Character
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div>
+    <div class="row py-4">
+        <h4>
+            @Html.DisplayFor(model => model.Name) (@Html.DisplayFor(model => model.OriginalName))
+        </h4>
+    </div>
+
+    <div class="row">
+        <div class="col-3">
+            <dl class="row">
+                <dt class="col">
+                    @Html.DisplayNameFor(model => model.BirthDate)
+                </dt>
+                <dd class="col">
+                    @Html.DisplayFor(model => model.BirthDate)
+                </dd>
+            </dl>
+            <dl class="row">
+                <dt class="col">
+                    @Html.DisplayNameFor(model => model.Planet!.Name)
+                </dt>
+                <dd class="col">
+                    @Html.DisplayFor(model => model.Planet!.Name)
+                </dd>
+            </dl>
+            <dl class="row">
+                <dt class="col">
+                    @Html.DisplayNameFor(model => model.Gender)
+                </dt>
+                <dd class="col">
+                    @Html.DisplayFor(model => model.Gender)
+                </dd>
+            </dl>
+            <dl class="row">
+                <dt class="col">
+                    @Html.DisplayNameFor(model => model!.Race.Name)
+                </dt>
+                <dd class="col">
+                    @Html.DisplayFor(model => model.Race.Name)
+                </dd>
+            </dl>
+        </div>
+        <div class="col-3">
+            <dl class="row">
+                <dt class="col">
+                    @Html.DisplayNameFor(model => model.Height)
+                </dt>
+                <dd class="col">
+                    @Html.DisplayFor(model => model.Height)
+                </dd>
+            </dl>
+            <dl class="row">
+                <dt class="col">
+                    @Html.DisplayNameFor(model => model.HairColor.Name)
+                </dt>
+                <dd class="col">
+                    @Html.DisplayFor(model => model.HairColor.Name)
+                </dd>
+            </dl>
+            <dl class="row">
+                <dt class="col">
+                    @Html.DisplayNameFor(model => model.EyeColor.Name)
+                </dt>
+                <dd class="col">
+                    @Html.DisplayFor(model => model.EyeColor.Name)
+                </dd>
+            </dl>
+        </div>
+        <dl class="col" align="center">
+            <dt>
+                @Html.DisplayNameFor(model => model.Movies)
+            </dt>
+            @if (@Model.Movies != null)
+            {
+                @foreach (var movie in @Model.Movies)
+                {
+                    <dd>
+                        @Html.DisplayFor(movieItem => movie.Title)
+                    </dd>
+                }
+            }
+        </dl>
+    </div>
+    <div class="row">
+        <dl class="col">
+            <dt class="row">
+                @Html.DisplayNameFor(model => model.History)
+            </dt>
+            <dd class="row">
+                @Html.DisplayFor(model => model.History)           
+            </dd>
+        </dl>
+    </div>
+</div>
+<div class="btn-group gap-2" role="group">
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteConfirmation">Удалить</button>
+    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model?.Id">Редактировать</a>
+</div>
+
+<!-- Модальное окно -->
+<div class="modal fade" id="deleteConfirmation" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteConfirmationLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post">
+                <input type="hidden" asp-for="Id" />
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmationLabel">Удаление персонажа</h5>
+                    <input class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Закрыть"/>
+                </div>
+                <div class="modal-body">
+                    Действительно удалить?
+                </div>
+                <div class="modal-footer">
+                    <input class="btn btn-primary" type="submit" asp-action="Delete" asp-route-id="@Model?.Id" value="Подтвердить"/>
+                    <a class="btn btn-secondary" data-bs-dismiss="modal">Отмена</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

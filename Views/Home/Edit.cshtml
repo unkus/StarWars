@@ -1,0 +1,231 @@
+@model StarWars.ViewModels.EditViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<div class="row py-4">
+    <h1>Редактирование персонажа @Html.DisplayFor(model => model.Character!.Name)</h1>
+</div>
+<form asp-action="Edit">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <div class="col-6">
+            <div class="input-group py-2 gap-2">
+                <label asp-for="Character!.Name" class="input-group-text col-4 fw-bold"></label>
+                <div class="col">
+                    <input asp-for="Character!.Name" class="form-control" />
+                    <span asp-validation-for="Character!.Name" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="input-group py-2 gap-2">
+                <label asp-for="Character!.OriginalName" class="input-group-text col-4 fw-bold"></label>
+                <div class="col">
+                    <input asp-for="Character!.OriginalName" class="form-control" />
+                    <span asp-validation-for="Character!.OriginalName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="input-group py-2 gap-2">
+                <label asp-for="Character!.BirthDate" class="input-group-text col-4 fw-bold"></label>
+                <div class="col">
+                    <input asp-for="Character!.BirthDate" class="form-control" />
+                    <span asp-validation-for="Character!.BirthDate" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="input-group py-2 gap-2">
+                <label asp-for="Character!.PlanetID" class="input-group-text col-4 fw-bold"></label>
+                <div class="col">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="planet-selector-tab" data-bs-toggle="tab" data-bs-target="#planet-selector" type="button" role="tab" aria-controls="planet-selector" aria-selected="true">Выбрать</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="planet-creator-tab" data-bs-toggle="tab" data-bs-target="#planet-creator" type="button" role="tab" aria-controls="planet-creator" aria-selected="false">Добавить</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active col" id="planet-selector" role="tabpanel" aria-labelledby="planet-selector-tab">
+                            <select asp-for="Character!.PlanetID" class ="form-select" asp-items="@Model.PlanetSelectList">
+                                <option selected>Выберите планету...</option>
+                            </select>
+                            <span asp-validation-for="Character!.PlanetID" class="text-danger"></span>
+                        </div>
+                        <div class="tab-pane fade col" id="planet-creator" role="tabpanel" aria-labelledby="planet-creator-tab">
+                            <input asp-for="PlanetName" class="form-control"/>
+                            <span asp-validation-for="PlanetName" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group py-2 gap-2">
+                <label asp-for="Character!.Gender" class="input-group-text col-4 fw-bold"></label>
+                <div class="col">
+                    <select asp-for="Character!.Gender" class="form-select" asp-items="Html.GetEnumSelectList<Gender>()">
+                        <option selected>Выберите пол...</option>
+                    </select>
+                    <span asp-validation-for="Character!.Gender" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="input-group py-2 gap-2">
+                <label asp-for="Character!.RaceID" class="input-group-text col-4 fw-bold"></label>
+                <div class="col">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="race-selector-tab" data-bs-toggle="tab" data-bs-target="#race-selector" type="button" role="tab" aria-controls="race-selector" aria-selected="true">Выбрать</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="race-creator-tab" data-bs-toggle="tab" data-bs-target="#race-creator" type="button" role="tab" aria-controls="race-creator" aria-selected="false">Добавить</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active col" id="race-selector" role="tabpanel" aria-labelledby="race-selector-tab">
+                            <select asp-for="Character!.RaceID" class ="form-select" asp-items="@Model.RaceSelectList">
+                                <option selected>Выберите расу...</option>
+                            </select>
+                            <span asp-validation-for="Character!.RaceID" class="text-danger"></span>
+                        </div>
+                        <div class="tab-pane fade col" id="race-creator" role="tabpanel" aria-labelledby="race-creator-tab">
+                            <input asp-for="RaceName" class="form-control"/>
+                            <span asp-validation-for="RaceName" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group py-2 gap-2">
+                <label asp-for="Character!.Height" class="input-group-text col-4 fw-bold"></label>
+                <div class="col">
+                    <input asp-for="Character!.Height" class="form-control floatNumber" step="0.01"/>
+                    <span asp-validation-for="Character!.Height" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="input-group py-2 gap-2">
+                <label asp-for="Character!.HairColorID" class="input-group-text col-4 fw-bold"></label>
+                <div class="col">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="haircolor-selector-tab" data-bs-toggle="tab" data-bs-target="#haircolor-selector" type="button" role="tab" aria-controls="haircolor-selector" aria-selected="true">Выбрать</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="haircolor-creator-tab" data-bs-toggle="tab" data-bs-target="#haircolor-creator" type="button" role="tab" aria-controls="haircolor-creator" aria-selected="false">Добавить</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active col" id="haircolor-selector" role="tabpanel" aria-labelledby="haircolor-selector-tab">
+                            <select asp-for="Character!.HairColorID" class ="form-select" asp-items="@Model.HairColorSelectList">
+                                <option selected>Выберите цвет...</option>
+                            </select>
+                            <span asp-validation-for="Character!.HairColorID" class="text-danger"></span>
+                        </div>
+                        <div class="tab-pane fade col" id="haircolor-creator" role="tabpanel" aria-labelledby="haircolor-creator-tab">
+                            <input asp-for="HairColorName" class="form-control"/>
+                            <span asp-validation-for="HairColorName" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group py-2 gap-2">
+                <label asp-for="Character!.EyeColorID" class="input-group-text col-4 fw-bold"></label>
+                <div class="col">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="eyecolor-selector-tab" data-bs-toggle="tab" data-bs-target="#eyecolor-selector" type="button" role="tab" aria-controls="eyecolor-selector" aria-selected="true">Выбрать</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="eyecolor-creator-tab" data-bs-toggle="tab" data-bs-target="#eyecolor-creator" type="button" role="tab" aria-controls="eyecolor-creator" aria-selected="false">Добавить</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active col" id="eyecolor-selector" role="tabpanel" aria-labelledby="eyecolor-selector-tab">
+                            <select asp-for="Character!.EyeColorID" class ="form-select" asp-items="@Model.EyeColorSelectList">
+                                <option selected>Выберите цвет...</option>
+                            </select>
+                            <span asp-validation-for="Character!.EyeColorID" class="text-danger"></span>
+                        </div>
+                        <div class="tab-pane fade col" id="eyecolor-creator" role="tabpanel" aria-labelledby="eyecolor-creator-tab">
+                            <input asp-for="EyeColorName" class="form-control"/>
+                            <span asp-validation-for="EyeColorName" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <label asp-for="Character!.History" class="form-control border-0 fw-bold"></label>
+            <div class="col">
+                <textarea asp-for="Character!.History" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Character!.History" class="text-danger"></span>
+            </div>
+            
+            <label asp-for="MovieID" class="form-control border-0 fw-bold"></label>
+            <dl id="attached-movie-list" class="col gap-1 border-1">
+                @foreach (var movie in @Model.Character!.Movies)
+                {
+                    <dd data-id="@Html.DisplayFor(m => movie.Id)">
+                        <span>@Html.DisplayFor(m => movie.Title)</span>
+                        <button id="detach-button" class="btn-close btn-sm border-0" type="button" onClick="detachMovie(@Html.DisplayFor(m => movie.Id))"></button>
+                    </dd>
+                }
+            </dl>
+
+            <div class="col">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="movie-selector-tab" data-bs-toggle="tab" data-bs-target="#movie-selector" type="button" role="tab" aria-controls="movie-selector" aria-selected="true">Выбрать</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="movie-creator-tab" data-bs-toggle="tab" data-bs-target="#movie-creator" type="button" role="tab" aria-controls="movie-creator" aria-selected="false">Добавить</button>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active row" id="movie-selector" role="tabpanel" aria-labelledby="movie-selector-tab">
+                        <select id="movie-holder" asp-for="MovieID" class ="form-select" hidden>
+                            @foreach(var movie in Model.Character.Movies) {
+                                <option value="@movie.Id" selected>@movie.Title</option>
+                            }
+                        </select>
+                        <div class="input-group py-2">
+                            <select id="detached-movie-list" class ="form-select" asp-items="@Model.MoviesToSelect"></select>
+                            <button id="attach-button" class="btn btn-outline-primary" type="button" onClick="attachMovie()">Добавить</button>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="movie-creator" role="tabpanel" aria-labelledby="movie-creator-tab">
+                        <input asp-for="MovieTitle" class="form-control"/>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="btn-group gap-2" role="group">
+        <a type="button" class="btn btn-secondary" onclick="history.go(-1)">Отмена</a>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteConfirmation">Удалить</button>
+        <input class="btn btn-primary" type="submit" value="Сохранить"/>
+    </div>
+</form>
+
+<!-- Модальное окно -->
+<div class="modal fade" id="deleteConfirmation" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteConfirmationLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post">
+                <input type="hidden" asp-for="Character!.Id" />
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteConfirmationLabel">Удаление персонажа</h5>
+                    <input class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Закрыть"/>
+                </div>
+                <div class="modal-body">
+                    Действительно удалить?
+                </div>
+                <div class="modal-footer">
+                    <input class="btn btn-primary" type="submit" asp-action="Delete" asp-route-id="@Model.Character!.Id" value="Подтвердить"/>
+                    <a class="btn btn-secondary" data-bs-dismiss="modal">Отмена</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/movie.js" asp-append-version="true"></script>
+}

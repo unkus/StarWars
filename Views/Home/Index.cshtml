@@ -1,0 +1,72 @@
+﻿@model StarWars.ViewModels.IndexViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h1>Каталог персонажей StarWars</h1>
+<hr/>
+<form>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="input-group gap-2 py-2">
+                    <label asp-for="BeginDate" class="input-group-text col-3"></label>
+                    <input asp-for="BeginDate" aria-label="Начальный год" class="form-control" />
+                    <label asp-for="EndDate" class="input-group-text"></label>
+                    <input asp-for="EndDate" aria-label="Конечный год" class="form-control" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="input-group gap-2 py-2">
+                    <label asp-for="PlanetID" class="input-group-text col-3"></label>
+                    <select asp-for="PlanetID" class="form-select" asp-items="@Model.PlanetSelectList">
+                        <option selected>Выберите планету...</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="input-group gap-2 py-2">
+                    <label asp-for="MovieID" class="input-group-text col-3"></label>
+                    <select asp-for="MovieID" class="form-select" multiple asp-items="@Model.MovieSelectList"></select>
+                </div>
+            </div>
+            <div class="col">
+                <div class="input-group gap-2 py-2">
+                    <label asp-for="Gender" class="input-group-text col-3"></label>
+                    <select asp-for="Gender" class="form-select" asp-items="Html.GetEnumSelectList<Gender>()">
+                        <option selected>Выберите пол...</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary col-3" type="submit" asp-action="Index">Применить</button>
+            </div>
+        </div>
+    </div>
+</form>
+<hr/>
+
+<div class="row row-cols-1 row-cols-md-2 g-4">
+@foreach (var character in @Model.Characters!)
+{
+    <div class="col">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <h4 class="card-title">@Html.DisplayFor(item => character.Name)</h4>
+                        <h6 class="card-subtitle mb-2 text-muted">@Html.DisplayFor(item => character.OriginalName)</h6>
+                    </div>
+                    <div class="col">
+                        <div class="btn-group gap-2" role="group">
+                            <a class="btn btn-primary" role="button" asp-action="Details" asp-route-id="@character.Id">Детали</a>
+                            <a class="btn btn-primary" role="button" asp-action="Edit" asp-route-id="@character.Id">Редактировать</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+</div>
