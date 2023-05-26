@@ -193,25 +193,30 @@ public class HomeController : Controller
 
         // TODO: откючить валидацию для PlanetID когда задано PlanetName
         // TODO: разобраться в ситуации когда заданы оба (задача валидации на клиенте)
-        viewModel.Character!.Planet = await _context.Planet.SingleOrDefaultAsync(p => p.Name == viewModel.PlanetName || p.Id == viewModel.Character.PlanetID);
+        // можно будет убрать проверку на null для viewModel.PlanetName
+        viewModel.Character!.Planet = await _context.Planet.SingleOrDefaultAsync(p => p.Name.Equals(viewModel.PlanetName) 
+                                                                                        || (viewModel.PlanetName == null && p.Id == viewModel.Character.PlanetID));
         if(viewModel.Character!.Planet == null && viewModel.PlanetName != null) {
             viewModel.Character!.Planet = new Planet { Name = viewModel.PlanetName };
         }
         viewModel.PlanetName = null;
 
-        viewModel.Character!.Race = await _context.Race.SingleOrDefaultAsync(p => p.Name == viewModel.RaceName || p.Id == viewModel.Character.RaceID);
+        viewModel.Character!.Race = await _context.Race.SingleOrDefaultAsync(r => r.Name.Equals(viewModel.RaceName)
+                                                                                        || (viewModel.RaceName == null && r.Id == viewModel.Character.RaceID));
         if(viewModel.Character!.Race == null && viewModel.RaceName != null) {
             viewModel.Character!.Race = new Race { Name = viewModel.RaceName };
         }
         viewModel.RaceName = null;
 
-        viewModel.Character!.HairColor = await _context.HairColor.SingleOrDefaultAsync(p => p.Name == viewModel.HairColorName || p.Id == viewModel.Character.HairColorID);
+        viewModel.Character!.HairColor = await _context.HairColor.SingleOrDefaultAsync(h => h.Name.Equals(viewModel.HairColorName)
+                                                                                        || (viewModel.HairColorName == null && h.Id == viewModel.Character.HairColorID));
         if(viewModel.Character!.HairColor == null && viewModel.HairColorName != null) {
             viewModel.Character!.HairColor = new HairColor { Name = viewModel.HairColorName };
         }
         viewModel.HairColorName = null;
 
-        viewModel.Character!.EyeColor = await _context.EyeColor.SingleOrDefaultAsync(p => p.Name == viewModel.EyeColorName || p.Id == viewModel.Character.EyeColorID);
+        viewModel.Character!.EyeColor = await _context.EyeColor.SingleOrDefaultAsync(e => e.Name.Equals(viewModel.EyeColorName)
+                                                                                        || (viewModel.EyeColorName == null && e.Id == viewModel.Character.EyeColorID));
         if(viewModel.Character!.EyeColor == null && viewModel.EyeColorName != null) {
             viewModel.Character!.EyeColor = new EyeColor { Name = viewModel.EyeColorName };
         }
