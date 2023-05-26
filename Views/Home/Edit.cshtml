@@ -178,7 +178,7 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane fade show active row" id="movie-selector" role="tabpanel" aria-labelledby="movie-selector-tab">
-                        <select id="movie-holder" asp-for="MovieID" class ="form-select">
+                        <select id="movie-holder" asp-for="MovieID" class ="form-select" hidden>
                             @foreach(var movie in Model.Character.Movies) {
                                 <option value="@movie.Id" selected>@Html.DisplayFor(m => movie.Title)</option>
                             }
