@@ -192,7 +192,7 @@ public class HomeController : Controller
         ModelState.ClearValidationState("Character.Movies");
 
         // TODO: откючить валидацию для PlanetID когда задано PlanetName
-        // TODO: разобраться в ситуации когда заданы оба
+        // TODO: разобраться в ситуации когда заданы оба (задача валидации на клиенте)
         viewModel.Character!.Planet = await _context.Planet.SingleOrDefaultAsync(p => p.Name == viewModel.PlanetName || p.Id == viewModel.Character.PlanetID);
         if(viewModel.Character!.Planet == null && viewModel.PlanetName != null) {
             viewModel.Character!.Planet = new Planet { Name = viewModel.PlanetName };
