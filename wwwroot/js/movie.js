@@ -1,16 +1,3 @@
-$('#movie-holder option').each(function() {
-    console.log(this);
-});
-$('#movie-holder option').select();
-
-$('#attach-button').click(function() {
-    console.log(this);
-});
-
-$('#detach-button').click(function() {
-    console.log(this);
-});
-
 function attachMovie() {
     var movieList = $('#attached-movie-list');
     var movieHolder = $('#movie-holder');
@@ -43,6 +30,7 @@ function detachMovie(id) {
     var movieHolder = $('#movie-holder');
     var movieSelector = $('#detached-movie-list');
     
+    console.log(movieHolder.val())
     var selectedMovie = movieHolder.find("[value=" + id + "]");
     selectedMovie.appendTo(movieSelector);
     selectedMovie.select()

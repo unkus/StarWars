@@ -10,7 +10,7 @@ using StarWars.Data;
 namespace StarWars.Migrations
 {
     [DbContext(typeof(StarWarsContext))]
-    [Migration("20230525111548_InitialCreate")]
+    [Migration("20230526000359_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

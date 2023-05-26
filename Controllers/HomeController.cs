@@ -141,19 +141,21 @@ public class HomeController : Controller
 
         await handleViewModel(editViewModel);
         Character? characterToUptate = await _context.Character.Where(c => c.Id == id).Include(c => c.Movies).SingleOrDefaultAsync();
-        characterToUptate!.Name = editViewModel.Character.Name;
-        characterToUptate.OriginalName = editViewModel.Character.OriginalName;
-        characterToUptate.PlanetID = editViewModel.Character.PlanetID;
-        characterToUptate.Planet = editViewModel.Character.Planet;
-        characterToUptate.RaceID = editViewModel.Character.RaceID;
-        characterToUptate.Race = editViewModel.Character.Race;
-        characterToUptate.Gender = editViewModel.Character.Gender;
-        characterToUptate.Height = editViewModel.Character.Height;
-        characterToUptate.HairColorID = editViewModel.Character.HairColorID;
-        characterToUptate.HairColor = editViewModel.Character.HairColor;
-        characterToUptate.EyeColorID = editViewModel.Character.EyeColorID;
-        characterToUptate.EyeColor = editViewModel.Character.EyeColor;
-        characterToUptate.Movies = editViewModel.Character.Movies;
+        if(characterToUptate != null) {
+            characterToUptate.Name = editViewModel.Character.Name;
+            characterToUptate.OriginalName = editViewModel.Character.OriginalName;
+            characterToUptate.PlanetID = editViewModel.Character.PlanetID;
+            characterToUptate.Planet = editViewModel.Character.Planet;
+            characterToUptate.RaceID = editViewModel.Character.RaceID;
+            characterToUptate.Race = editViewModel.Character.Race;
+            characterToUptate.Gender = editViewModel.Character.Gender;
+            characterToUptate.Height = editViewModel.Character.Height;
+            characterToUptate.HairColorID = editViewModel.Character.HairColorID;
+            characterToUptate.HairColor = editViewModel.Character.HairColor;
+            characterToUptate.EyeColorID = editViewModel.Character.EyeColorID;
+            characterToUptate.EyeColor = editViewModel.Character.EyeColor;
+            characterToUptate.Movies = editViewModel.Character.Movies;
+        }
 
         if (ModelState.IsValid)
         {

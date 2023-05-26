@@ -160,9 +160,9 @@
             <dl id="attached-movie-list" class="col gap-1 border-1">
                 @foreach (var movie in @Model.Character!.Movies)
                 {
-                    <dd data-id="@Html.DisplayFor(m => movie.Id)">
+                    <dd data-id="@movie.Id">
                         <span>@Html.DisplayFor(m => movie.Title)</span>
-                        <button id="detach-button" class="btn-close btn-sm border-0" type="button" onClick="detachMovie(@Html.DisplayFor(m => movie.Id))"></button>
+                        <button id="detach-button" class="btn-close btn-sm border-0" type="button" onClick="detachMovie(@movie.Id)"></button>
                     </dd>
                 }
             </dl>
@@ -178,9 +178,9 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane fade show active row" id="movie-selector" role="tabpanel" aria-labelledby="movie-selector-tab">
-                        <select id="movie-holder" asp-for="MovieID" class ="form-select" hidden>
+                        <select id="movie-holder" asp-for="MovieID" class ="form-select">
                             @foreach(var movie in Model.Character.Movies) {
-                                <option value="@movie.Id" selected>@movie.Title</option>
+                                <option value="@movie.Id" selected>@Html.DisplayFor(m => movie.Title)</option>
                             }
                         </select>
                         <div class="input-group py-2">
@@ -189,6 +189,7 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="movie-creator" role="tabpanel" aria-labelledby="movie-creator-tab">
+                        <label for="MovieTitle" class="form-control border-0 fw-bold">Название нового фильма</label>
                         <input asp-for="MovieTitle" class="form-control"/>
                     </div>
                     
