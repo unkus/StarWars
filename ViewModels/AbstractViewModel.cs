@@ -11,11 +11,7 @@ public abstract class AbstractViewModel
 
     public string? PlanetName { get; set; }
 
-    public IEnumerable<SelectListItem>? PlanetsToSelect { get; set; }
-    
     public string? RaceName { get; set; }
-
-    public IEnumerable<SelectListItem>? RaceToSelect { get; set; }
 
     public string? HairColorName { get; set; }
 
@@ -31,5 +27,5 @@ public abstract class AbstractViewModel
     public IEnumerable<SelectListItem>? RaceSelectList { get; set; }
     public IEnumerable<SelectListItem>? HairColorSelectList { get; set; }
     public IEnumerable<SelectListItem>? EyeColorSelectList { get; set; }
-    public IEnumerable<SelectListItem>? MoviesToSelect { get; set; }
+    public IEnumerable<SelectListItem>? MoviesSelectList { get; set; }
 }

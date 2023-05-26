@@ -162,7 +162,7 @@
                 {
                     <dd data-id="@movie.Id">
                         <span>@Html.DisplayFor(m => movie.Title)</span>
-                        <button id="detach-button" class="btn-close btn-sm border-0" type="button" onClick="detachMovie(@movie.Id)"></button>
+                        <button id="detach-movie-button" class="btn-close btn-sm border-0" type="button"></button>
                     </dd>
                 }
             </dl>
@@ -184,8 +184,8 @@
                             }
                         </select>
                         <div class="input-group py-2">
-                            <select id="detached-movie-list" class ="form-select" asp-items="@Model.MoviesToSelect"></select>
-                            <button id="attach-button" class="btn btn-outline-primary" type="button" onClick="attachMovie()">Добавить</button>
+                            <select id="detached-movie-list" class ="form-select" asp-items="@Model.MoviesSelectList"></select>
+                            <button id="attach-movie-button" class="btn btn-outline-primary" type="button">Добавить</button>
                         </div>
                     </div>
                     <div class="tab-pane fade" id="movie-creator" role="tabpanel" aria-labelledby="movie-creator-tab">

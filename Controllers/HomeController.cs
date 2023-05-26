@@ -72,7 +72,7 @@ public class HomeController : Controller
     {
         CreateViewModel createViewModel = new CreateViewModel();
         prepareEditView(createViewModel);
-        createViewModel.MoviesToSelect = new MultiSelectList(_context.Movie, "Id", "Title", createViewModel.Character?.Movies);
+        createViewModel.MoviesSelectList = new MultiSelectList(_context.Movie, "Id", "Title", createViewModel.Character?.Movies);
         return View(createViewModel);
     }
 
@@ -91,7 +91,7 @@ public class HomeController : Controller
         }
         
         prepareEditView(createViewModel);
-        createViewModel.MoviesToSelect = new MultiSelectList(_context.Movie, "Id", "Title", createViewModel.Character?.Movies);
+        createViewModel.MoviesSelectList = new MultiSelectList(_context.Movie, "Id", "Title", createViewModel.Character?.Movies);
         return View(createViewModel);
     }
 
@@ -118,7 +118,7 @@ public class HomeController : Controller
 
         EditViewModel editViewModel = new EditViewModel { Character = character };
         prepareEditView(editViewModel);
-        editViewModel.MoviesToSelect = new SelectList(_context.Movie.Where(m => !editViewModel.Character.Movies.Contains(m)), "Id", "Title");
+        editViewModel.MoviesSelectList = new SelectList(_context.Movie.Where(m => !editViewModel.Character.Movies.Contains(m)), "Id", "Title");
 
         return View(editViewModel);
     }
@@ -178,7 +178,7 @@ public class HomeController : Controller
             return RedirectToAction(nameof(Index));
         }
         prepareEditView(editViewModel);
-        editViewModel.MoviesToSelect = new SelectList(_context.Movie.Where(m => !editViewModel.Character.Movies.Contains(m)), "Id", "Title");
+        editViewModel.MoviesSelectList = new SelectList(_context.Movie.Where(m => !editViewModel.Character.Movies.Contains(m)), "Id", "Title");
 
         return View(editViewModel);
     }
