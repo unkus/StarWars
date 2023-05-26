@@ -128,7 +128,7 @@ public class HomeController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, EditViewModel editViewModel)
     {
-        // character.Id всегда 0
+        // editViewModel.Character.Id всегда 0
         // if (id != character.Id)
         // {
         //     return NotFound();
@@ -191,6 +191,8 @@ public class HomeController : Controller
         ModelState.ClearValidationState("Character.EyeColor");
         ModelState.ClearValidationState("Character.Movies");
 
+        // TODO: откючить валидацию для PlanetID когда задано PlanetName
+        // TODO: разобраться в ситуации когда заданы оба
         viewModel.Character!.Planet = await _context.Planet.SingleOrDefaultAsync(p => p.Name == viewModel.PlanetName || p.Id == viewModel.Character.PlanetID);
         if(viewModel.Character!.Planet == null && viewModel.PlanetName != null) {
             viewModel.Character!.Planet = new Planet { Name = viewModel.PlanetName };
@@ -215,54 +217,6 @@ public class HomeController : Controller
         }
         viewModel.EyeColorName = null;
         
-        // // Если планета выбрана и введено новое название добавляем новую запись и ссылаемся на нее
-        // if(viewModel.PlanetName != null)
-        // {
-        //     if(planet == null)
-        //     {
-        //         viewModel.Character!.Planet = new Planet { Name = viewModel.PlanetName};
-        //         viewModel.PlanetName = null;
-        //         ModelState.ClearValidationState("Character.PlanetID");
-        //         ModelState.MarkFieldSkipped("Character.PlanetID");
-        //     }
-        // }
-        // // Если раса выбрана и введено новое название добавляем новую запись и ссылаемся на нее
-        // if(viewModel.RaceName != null)
-        // {
-        //     Race? race = await _context.Race.SingleOrDefaultAsync(r => r.Name == viewModel.RaceName);
-        //     if(race == null)
-        //     {
-        //         viewModel.Character!.Race = new Race { Name = viewModel.RaceName};
-        //         viewModel.RaceName = null;
-        //         ModelState.ClearValidationState("Character.RaceID");
-        //         ModelState.MarkFieldSkipped("Character.RaceID");
-        //     }
-        // }
-        // // Если цвет выбран и введено новое название добавляем новую запись и ссылаемся на нее
-        // if(viewModel.HairColorName != null)
-        // {
-        //     HairColor? color = await _context.HairColor.SingleOrDefaultAsync(c => c.Name == viewModel.HairColorName);
-        //     if(color == null)
-        //     {
-        //         viewModel.Character!.HairColor = new HairColor { Name = viewModel.HairColorName};
-        //         viewModel.HairColorName = null;
-        //         ModelState.ClearValidationState("Character.HairColorID");
-        //         ModelState.MarkFieldSkipped("Character.HairColorID");
-        //     }
-        // }
-        // // Если цвет выбран и введено новое название добавляем новую запись и ссылаемся на нее
-        // if(viewModel.EyeColorName != null)
-        // {
-        //     EyeColor? color = await _context.EyeColor.SingleOrDefaultAsync(r => r.Name == viewModel.EyeColorName);
-        //     if(color == null)
-        //     {
-        //         viewModel.Character!.EyeColor = new EyeColor { Name = viewModel.EyeColorName};
-        //         viewModel.EyeColorName = null;
-        //         ModelState.ClearValidationState("Character.EyeColorID");
-        //         ModelState.MarkFieldSkipped("Character.EyeColorID");
-        //     }
-        // }
-
         viewModel.Character!.Movies = viewModel.MovieID != null ? await _context.Movie.Where(m => viewModel.MovieID.Contains(m.Id)).ToListAsync() : new List<Movie>();
         IEnumerable<Movie>? moviesByTitle = viewModel.MovieTitle != null ? await _context.Movie.Where(m => viewModel.MovieTitle.Contains(m.Title)).ToListAsync() : null;
         if(viewModel.MovieTitle != null)
@@ -285,40 +239,6 @@ public class HomeController : Controller
             viewModel.MovieTitle = null;
         }
 
-        // if(viewModel.MovieID != null)
-        // {
-        //     viewModel.Character!.Movies = await _context.Movie.Where(m => viewModel.MovieID.Contains(m.Id)).ToListAsync();
-        //     viewModel.MovieID = null;
-        // }
-        // if(viewModel.MovieTitle != null)
-        // {
-        //     if(viewModel.Character!.Movies == null)
-        //     {
-        //         viewModel.Character.Movies = new List<Movie>();
-        //     }
-
-        //     foreach (var title in viewModel.MovieTitle.Reverse())
-        //     {
-        //         // TODO: Хотел сделать передачу новых фильмов сразу списком
-        //         // Empty input field always produce null string in query
-        //         if(title != null)
-        //         {
-        //             Movie? movie = await _context.Movie.SingleOrDefaultAsync(m => m.Title == title);
-        //             if(movie != null)
-        //             {
-        //                 viewModel.Character.Movies.Add(movie);
-        //             } else {
-        //                 viewModel.Character.Movies.Add(new Movie { Title = title });
-        //             }
-        //             // TODO: придумать что-то еще. Каждый раз искать в списке строку что бы ее удалить плохо.
-        //             // или перейти на индексы в обратном порядке
-        //             viewModel.MovieTitle.Remove(title);
-        //         } else {
-        //             viewModel.MovieTitle.Remove(title);
-        //         }
-        //     }
-        //     viewModel.MovieTitle = null;
-        // }
         TryValidateModel(viewModel);
     }
 
@@ -346,37 +266,6 @@ public class HomeController : Controller
     
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
-    }
-
-    [AcceptVerbs("GET", "POST")]
-    public IActionResult VerifyName(string? name)
-    {
-        // аргумент name не может принять значение от Character.Name
-        StringValues value = "";
-        if(Request.Query.TryGetValue("Character.Name", out value))
-        {
-            if (_context.Character.Any(c => c.Name.Equals(value)))
-            {
-                return Json($"Персонаж {value} уже есть.");
-            }
-        }
-        return Json(true);
-    }
-
-    [AcceptVerbs("GET", "POST")]
-    public IActionResult VerifyOriginalName(string? originalName)
-    {
-        // аргумент OriginalName не может принять значение от Character.OriginalName
-        StringValues value = "";
-        if(Request.Query.TryGetValue("Character.OriginalName", out value))
-        {
-            if (_context.Character.Any(c => c.Name.Equals(value)))
-            {
-                return Json($"Персонаж {value} уже есть.");
-            }
-        }
-
-        return Json(true);
     }
 
     private bool CharacterExists(int id)
