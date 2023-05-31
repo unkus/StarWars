@@ -1,4 +1,4 @@
-@model StarWars.Models.Character
+@model StarWars.ViewModels.DetailsViewModel
 
 @{
     ViewData["Title"] = "Details";
@@ -23,10 +23,10 @@
             </dl>
             <dl class="row">
                 <dt class="col">
-                    @Html.DisplayNameFor(model => model.Planet!.Name)
+                    @Html.DisplayNameFor(model => model.Planet)
                 </dt>
                 <dd class="col">
-                    @Html.DisplayFor(model => model.Planet!.Name)
+                    @Html.DisplayFor(model => model.Planet)
                 </dd>
             </dl>
             <dl class="row">
@@ -39,10 +39,10 @@
             </dl>
             <dl class="row">
                 <dt class="col">
-                    @Html.DisplayNameFor(model => model!.Race.Name)
+                    @Html.DisplayNameFor(model => model.Race)
                 </dt>
                 <dd class="col">
-                    @Html.DisplayFor(model => model.Race.Name)
+                    @Html.DisplayFor(model => model.Race)
                 </dd>
             </dl>
         </div>
@@ -57,18 +57,18 @@
             </dl>
             <dl class="row">
                 <dt class="col">
-                    @Html.DisplayNameFor(model => model.HairColor.Name)
+                    @Html.DisplayNameFor(model => model.HairColor)
                 </dt>
                 <dd class="col">
-                    @Html.DisplayFor(model => model.HairColor.Name)
+                    @Html.DisplayFor(model => model.HairColor)
                 </dd>
             </dl>
             <dl class="row">
                 <dt class="col">
-                    @Html.DisplayNameFor(model => model.EyeColor.Name)
+                    @Html.DisplayNameFor(model => model.EyeColor)
                 </dt>
                 <dd class="col">
-                    @Html.DisplayFor(model => model.EyeColor.Name)
+                    @Html.DisplayFor(model => model.EyeColor)
                 </dd>
             </dl>
         </div>
@@ -81,7 +81,7 @@
                 @foreach (var movie in @Model.Movies)
                 {
                     <dd>
-                        @Html.DisplayFor(movieItem => movie.Title)
+                        @Html.DisplayFor(movieItem => movie)
                     </dd>
                 }
             }

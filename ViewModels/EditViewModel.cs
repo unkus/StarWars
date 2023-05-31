@@ -5,7 +5,7 @@ using StarWars.Data;
 
 namespace StarWars.ViewModels;
 
-public class EditViewModel: AbstractViewModel
+public class EditViewModel: CreateViewModel
 {
-
+    public int Id { get; set; }
 }

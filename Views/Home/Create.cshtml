@@ -12,28 +12,28 @@
     <div class="row">
         <div class="col-6">
             <div class="input-group py-2 gap-2">
-                <label asp-for="Character!.Name" class="input-group-text col-4 fw-bold"></label>
+                <label asp-for="Name" class="input-group-text col-4 fw-bold"></label>
                 <div class="col">
-                    <input asp-for="Character!.Name" class="form-control" />
-                    <span asp-validation-for="Character!.Name" class="text-danger"></span>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
             </div>
             <div class="input-group py-2 gap-2">
-                <label asp-for="Character!.OriginalName" class="input-group-text col-4 fw-bold"></label>
+                <label asp-for="OriginalName" class="input-group-text col-4 fw-bold"></label>
                 <div class="col">
-                    <input asp-for="Character!.OriginalName" class="form-control" />
-                    <span asp-validation-for="Character!.OriginalName" class="text-danger"></span>
+                    <input asp-for="OriginalName" class="form-control" />
+                    <span asp-validation-for="OriginalName" class="text-danger"></span>
                 </div>
             </div>
             <div class="input-group py-2 gap-2">
-                <label asp-for="Character!.BirthDate" class="input-group-text col-4 fw-bold"></label>
+                <label asp-for="BirthDate" class="input-group-text col-4 fw-bold"></label>
                 <div class="col">
-                    <input asp-for="Character!.BirthDate" class="form-control" />
-                    <span asp-validation-for="Character!.BirthDate" class="text-danger"></span>
+                    <input asp-for="BirthDate" class="form-control" />
+                    <span asp-validation-for="BirthDate" class="text-danger"></span>
                 </div>
             </div>
             <div class="input-group py-2 gap-2">
-                <label asp-for="Character!.PlanetID" class="input-group-text col-4 fw-bold"></label>
+                <label asp-for="PlanetID" class="input-group-text col-4 fw-bold"></label>
                 <div class="col">
                     <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item" role="presentation">
@@ -45,10 +45,10 @@
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane fade show active col" id="planet-selector" role="tabpanel" aria-labelledby="planet-selector-tab">
-                            <select asp-for="Character!.PlanetID" class ="form-select" asp-items="@Model.PlanetSelectList">
-                                <option selected>Выберите планету...</option>
+                            <select asp-for="PlanetID" class ="form-select" asp-items="@Model.PlanetSelectList">
+                                <option>Выберите планету...</option>
                             </select>
-                            <span asp-validation-for="Character!.PlanetID" class="text-danger"></span>
+                            <span asp-validation-for="PlanetID" class="text-danger"></span>
                         </div>
                         <div class="tab-pane fade col" id="planet-creator" role="tabpanel" aria-labelledby="planet-creator-tab">
                             <input asp-for="PlanetName" class="form-control"/>
@@ -58,16 +58,16 @@
                 </div>
             </div>
             <div class="input-group py-2 gap-2">
-                <label asp-for="Character!.Gender" class="input-group-text col-4 fw-bold"></label>
+                <label asp-for="Gender" class="input-group-text col-4 fw-bold"></label>
                 <div class="col">
-                    <select asp-for="Character!.Gender" class="form-select" asp-items="Html.GetEnumSelectList<Gender>()">
-                        <option selected>Выберите пол...</option>
+                    <select asp-for="Gender" class="form-select" asp-items="Html.GetEnumSelectList<Gender>()">
+                        <option>Выберите пол...</option>
                     </select>
-                    <span asp-validation-for="Character!.Gender" class="text-danger"></span>
+                    <span asp-validation-for="Gender" class="text-danger"></span>
                 </div>
             </div>
             <div class="input-group py-2 gap-2">
-                <label asp-for="Character!.RaceID" class="input-group-text col-4 fw-bold"></label>
+                <label asp-for="RaceID" class="input-group-text col-4 fw-bold"></label>
                 <div class="col">
                     <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item" role="presentation">
@@ -79,10 +79,10 @@
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane fade show active col" id="race-selector" role="tabpanel" aria-labelledby="race-selector-tab">
-                            <select asp-for="Character!.RaceID" class ="form-select" asp-items="@Model.RaceSelectList">
-                                <option selected>Выберите расу...</option>
+                            <select asp-for="RaceID" class ="form-select" asp-items="@Model.RaceSelectList">
+                                <option>Выберите расу...</option>
                             </select>
-                            <span asp-validation-for="Character!.RaceID" class="text-danger"></span>
+                            <span asp-validation-for="RaceID" class="text-danger"></span>
                         </div>
                         <div class="tab-pane fade col" id="race-creator" role="tabpanel" aria-labelledby="race-creator-tab">
                             <input asp-for="RaceName" class="form-control"/>
@@ -92,14 +92,14 @@
                 </div>
             </div>
             <div class="input-group py-2 gap-2">
-                <label asp-for="Character!.Height" class="input-group-text col-4 fw-bold"></label>
+                <label asp-for="Height" class="input-group-text col-4 fw-bold"></label>
                 <div class="col">
-                    <input asp-for="Character!.Height" class="form-control floatNumber" step="0.01"/>
-                    <span asp-validation-for="Character!.Height" class="text-danger"></span>
+                    <input asp-for="Height" class="form-control floatNumber" step="0.01"/>
+                    <span asp-validation-for="Height" class="text-danger"></span>
                 </div>
             </div>
             <div class="input-group py-2 gap-2">
-                <label asp-for="Character!.HairColorID" class="input-group-text col-4 fw-bold"></label>
+                <label asp-for="HairColorID" class="input-group-text col-4 fw-bold"></label>
                 <div class="col">
                     <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item" role="presentation">
@@ -111,10 +111,10 @@
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane fade show active col" id="haircolor-selector" role="tabpanel" aria-labelledby="haircolor-selector-tab">
-                            <select asp-for="Character!.HairColorID" class ="form-select" asp-items="@Model.HairColorSelectList">
-                                <option selected>Выберите цвет...</option>
+                            <select asp-for="HairColorID" class ="form-select" asp-items="@Model.HairColorSelectList">
+                                <option>Выберите цвет...</option>
                             </select>
-                            <span asp-validation-for="Character!.HairColorID" class="text-danger"></span>
+                            <span asp-validation-for="HairColorID" class="text-danger"></span>
                         </div>
                         <div class="tab-pane fade col" id="haircolor-creator" role="tabpanel" aria-labelledby="haircolor-creator-tab">
                             <input asp-for="HairColorName" class="form-control"/>
@@ -124,7 +124,7 @@
                 </div>
             </div>
             <div class="input-group py-2 gap-2">
-                <label asp-for="Character!.EyeColorID" class="input-group-text col-4 fw-bold"></label>
+                <label asp-for="EyeColorID" class="input-group-text col-4 fw-bold"></label>
                 <div class="col">
                     <ul class="nav nav-tabs" role="tablist">
                         <li class="nav-item" role="presentation">
@@ -136,10 +136,10 @@
                     </ul>
                     <div class="tab-content">
                         <div class="tab-pane fade show active col" id="eyecolor-selector" role="tabpanel" aria-labelledby="eyecolor-selector-tab">
-                            <select asp-for="Character!.EyeColorID" class ="form-select" asp-items="@Model.EyeColorSelectList">
-                                <option selected>Выберите цвет...</option>
+                            <select asp-for="EyeColorID" class ="form-select" asp-items="@Model.EyeColorSelectList">
+                                <option>Выберите цвет...</option>
                             </select>
-                            <span asp-validation-for="Character!.EyeColorID" class="text-danger"></span>
+                            <span asp-validation-for="EyeColorID" class="text-danger"></span>
                         </div>
                         <div class="tab-pane fade col" id="eyecolor-creator" role="tabpanel" aria-labelledby="eyecolor-creator-tab">
                             <input asp-for="EyeColorName" class="form-control"/>
@@ -150,10 +150,10 @@
             </div>
         </div>
         <div class="col">
-            <label asp-for="Character!.History" class="form-control border-0 fw-bold"></label>
+            <label asp-for="History" class="form-control border-0 fw-bold"></label>
             <div class="col">
-                <textarea asp-for="Character!.History" class="form-control" rows="4"></textarea>
-                <span asp-validation-for="Character!.History" class="text-danger"></span>
+                <textarea asp-for="History" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="History" class="text-danger"></span>
             </div>
             
             <label asp-for="MovieID" class="form-control border-0 fw-bold"></label>
