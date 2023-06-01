@@ -8,7 +8,6 @@ namespace StarWars.Models
     {
         public int Id { get; set; }
         
-        [Display(Name = "Название")]
         public string Title { get; set; }
 
         public virtual ICollection<Character>? Character { get; set; }
