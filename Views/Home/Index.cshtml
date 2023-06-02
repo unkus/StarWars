@@ -19,18 +19,27 @@
             </div>
             <div class="col">
                 <div class="input-group gap-2 py-2">
-                    <label asp-for="PlanetID" class="input-group-text col-3"></label>
-                    <select asp-for="PlanetID" class="form-select" asp-items="@Model.PlanetSelectList">
-                        <option selected>Выберите планету...</option>
-                    </select>
+                    <label asp-for="Planet" class="input-group-text col-3"></label>
+                    <input asp-for="Planet" class="form-select" list="Planets" placeholder="Выберите планету..."></input>
+                    <datalist id="Planets">
+                        @foreach (var item in @Model.PlanetList)
+                        {
+                            <option value="@item"/>
+                        }
+                    </datalist>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col">
                 <div class="input-group gap-2 py-2">
-                    <label asp-for="MovieID" class="input-group-text col-3"></label>
-                    <select asp-for="MovieID" class="form-select" multiple asp-items="@Model.MovieSelectList"></select>
+                    <label asp-for="Movies" class="input-group-text col-3"></label>
+                    <select asp-for="Movies" class="form-select" multiple>
+                        @foreach (var item in @Model.MovieList)
+                        {
+                            <option value="item"></option>
+                        }
+                    </select>
                 </div>
             </div>
             <div class="col">
@@ -60,8 +69,8 @@
                     </div>
                     <div class="col">
                         <div class="btn-group gap-2" role="group">
-                            <a class="btn btn-primary" role="button" asp-action="Details" asp-route-id="@character.Id">Детали</a>
-                            <a class="btn btn-primary" role="button" asp-action="Edit" asp-route-id="@character.Id">Редактировать</a>
+                            <a class="btn btn-primary" role="button" asp-action="Details" asp-route-id="@character.Name">Детали</a>
+                            <a class="btn btn-primary" role="button" asp-action="Edit" asp-route-id="@character.Name">Редактировать</a>
                         </div>
                     </div>
                 </div>

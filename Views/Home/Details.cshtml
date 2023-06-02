@@ -100,7 +100,7 @@
 </div>
 <div class="btn-group gap-2" role="group">
     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteConfirmation">Удалить</button>
-    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model?.Id">Редактировать</a>
+    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model?.Name">Редактировать</a>
 </div>
 
 <!-- Модальное окно -->
@@ -108,7 +108,6 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form method="post">
-                <input type="hidden" asp-for="Id" />
                 <div class="modal-header">
                     <h5 class="modal-title" id="deleteConfirmationLabel">Удаление персонажа</h5>
                     <input class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Закрыть"/>
@@ -117,7 +116,7 @@
                     Действительно удалить?
                 </div>
                 <div class="modal-footer">
-                    <input class="btn btn-primary" type="submit" asp-action="Delete" asp-route-id="@Model?.Id" value="Подтвердить"/>
+                    <input class="btn btn-primary" type="submit" asp-action="Delete" asp-route-id="@Model?.Name" value="Подтвердить"/>
                     <a class="btn btn-secondary" data-bs-dismiss="modal">Отмена</a>
                 </div>
             </form>

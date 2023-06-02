@@ -1,31 +1,23 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using StarWars.Models;
-using StarWars.Data;
 
 namespace StarWars.ViewModels;
 
-public class DetailsViewModel
+public class DetailsViewModel : CardViewModel
 {
-
-    public int Id { get; set; }
-
-    [Display(Name = "Имя персонажа")]
-    public string Name { get; set; }
-
-    [Display(Name = "Имя (в оригинале)")]
-    public string OriginalName { get; set; }
-
     [Display(Name = "Дата рождения")]
     public int BirthDate { get; set; }
 
     [Display(Name = "Планета")]
+    [DisplayFormat(NullDisplayText = "Выберите планету...")]
     public string Planet { get; set; }
 
     [Display(Name = "Пол")]
+    [DisplayFormat(NullDisplayText = "Выберите пол...")]
     public Gender Gender { get; set; }
 
     [Display(Name = "Раса")]
+    [DisplayFormat(NullDisplayText = "Выберите расу...")]
     public string Race { get; set; }
 
     [Display(Name = "Рост")]
@@ -33,14 +25,16 @@ public class DetailsViewModel
     public decimal Height { get; set; }
 
     [Display(Name = "Цвет волос")]
+    [DisplayFormat(NullDisplayText = "Выберите цвет...")]
     public string HairColor { get; set; }
 
     [Display(Name = "Цвет глаз")]
+    [DisplayFormat(NullDisplayText = "Выберите цвет...")]
     public string EyeColor { get; set; }
 
     [Display(Name = "Описание")]
     public string History { get; set; }
 
     [Display(Name = "Фильмы")]
-    public virtual IEnumerable<String> Movies { get; set; }
+    public IEnumerable<string> Movies { get; set; }
 }

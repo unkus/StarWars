@@ -26,26 +26,32 @@ public class HomeController : Controller
     // GET: Index
     public async Task<IActionResult> Index(IndexViewModel indexViewModel)
     {
-        indexViewModel.PlanetSelectList = new SelectList(_context.Planet, nameof(Planet.Id), nameof(Planet.Name), indexViewModel.PlanetID);
-        indexViewModel.MovieSelectList = new MultiSelectList(_context.Movie, nameof(Movie.Id), nameof(Movie.Title), indexViewModel.MovieID);
+        indexViewModel.PlanetList = await _context.Planet.Select(p => p.Name).ToListAsync();
+        indexViewModel.MovieList = await _context.Movie.Select(m => m.Title).ToListAsync();
 
-        indexViewModel.Characters = await _context.Character
+        IEnumerable<Character> characterList = await _context.Character
             .Where(
                 c => (indexViewModel.BeginDate == null || indexViewModel.BeginDate < c.BirthDate)
                 && (indexViewModel.EndDate == null || c.BirthDate > indexViewModel.EndDate)
-                && (indexViewModel.PlanetID == null || c.PlanetID == indexViewModel.PlanetID)
+                && (indexViewModel.Planet == null || c.Planet.Equals(indexViewModel.Planet))
                 && (indexViewModel.Gender == null || c.Gender == indexViewModel.Gender)
-                && (indexViewModel.MovieID == null || c.Movies!.Any(m => indexViewModel.MovieID.Contains(m.Id)))
+                && (indexViewModel.Movies == null || c.Movies!.Any(m => indexViewModel.Movies.Contains(m.Title)))
             )
             .Include(c => c.Planet)
             .Include(c => c.Movies)
             .ToListAsync();
 
+        indexViewModel.Characters = characterList.Select(c => new CardViewModel()
+        {
+            Name = c.Name,
+            OriginalName = c.OriginalName
+        }).ToList();
+
         return View(indexViewModel);
     }
 
     // GET: Details
-    public async Task<IActionResult> Details(int? id)
+    public async Task<IActionResult> Details(string id)
     {
         if (id == null || _context.Character == null)
         {
@@ -58,7 +64,7 @@ public class HomeController : Controller
             .Include(c => c.HairColor)
             .Include(c => c.EyeColor)
             .Include(c => c.Movies)
-            .FirstOrDefaultAsync(c => c.Id == id);
+            .FirstOrDefaultAsync(c => c.Name.Equals(id));
         if (character == null)
         {
             return NotFound();
@@ -66,7 +72,6 @@ public class HomeController : Controller
 
         return View(new DetailsViewModel
         {
-            Id = character.Id,
             Name = character.Name,
             OriginalName = character.OriginalName,
             BirthDate = character.BirthDate,
@@ -82,15 +87,15 @@ public class HomeController : Controller
     }
 
     // GET: Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
         CreateViewModel createViewModel = new CreateViewModel()
         {
-            PlanetSelectList = new SelectList(_context.Planet, nameof(Planet.Id), nameof(Planet.Name)),
-            RaceSelectList = new SelectList(_context.Race, nameof(Race.Id), nameof(Race.Name)),
-            HairColorSelectList = new SelectList(_context.HairColor, nameof(HairColor.Id), nameof(HairColor.Name)),
-            EyeColorSelectList = new SelectList(_context.EyeColor, nameof(EyeColor.Id), nameof(EyeColor.Name)),
-            MoviesSelectList = new MultiSelectList(_context.Movie, nameof(Movie.Id), nameof(Movie.Title))
+            PlanetList = await _context.Planet.Select(p => p.Name).ToListAsync(),
+            RaceList = await _context.Race.Select(r => r.Name).ToListAsync(),
+            HairColorList = await _context.HairColor.Select(h => h.Name).ToListAsync(),
+            EyeColorList = await _context.EyeColor.Select(e => e.Name).ToListAsync(),
+            MoviesList = await _context.Movie.Select(m => m.Title).ToListAsync()
         };
         return View(createViewModel);
     }
@@ -98,39 +103,39 @@ public class HomeController : Controller
     // POST: Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(CreateViewModel createViewModel)
+    public async Task<IActionResult> Create(EditViewModel viewModel)
     {
-        await handleViewModel(createViewModel);
+        await handleViewModel(viewModel);
 
         if (ModelState.IsValid)
         {
             _context.Add(new Character
             {
-                Name = createViewModel.Name,
-                OriginalName = createViewModel.OriginalName,
-                BirthDate = createViewModel.BirthDate,
-                PlanetID = createViewModel.PlanetID,
-                Gender = createViewModel.Gender,
-                RaceID = createViewModel.RaceID,
-                HairColorID = createViewModel.HairColorID,
-                EyeColorID = createViewModel.EyeColorID,
-                History = createViewModel.History,
-                Movies = _context.Movie.Where(m => createViewModel.MovieID.Contains(m.Id)).ToList()
+                Name = viewModel.Name,
+                OriginalName = viewModel.OriginalName,
+                BirthDate = viewModel.BirthDate,
+                PlanetID = _context.Planet.Where(p => p.Name.Equals(viewModel.Planet)).Select(p => p.Id).SingleOrDefault(),
+                Gender = viewModel.Gender,
+                RaceID = _context.Race.Where(r => r.Name.Equals(viewModel.Race)).Select(r => r.Id).SingleOrDefault(),
+                HairColorID = _context.HairColor.Where(h => h.Name.Equals(viewModel.HairColor)).Select(h => h.Id).SingleOrDefault(),
+                EyeColorID = _context.EyeColor.Where(e => e.Name.Equals(viewModel.EyeColor)).Select(e => e.Id).SingleOrDefault(),
+                History = viewModel.History,
+                Movies = _context.Movie.Where(m => viewModel.Movies.Contains(m.Title)).ToList()
             });
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        createViewModel.PlanetSelectList = new SelectList(_context.Planet, nameof(Planet.Id), nameof(Planet.Name), createViewModel.PlanetID);
-        createViewModel.RaceSelectList = new SelectList(_context.Race, nameof(Race.Id), nameof(Race.Name), createViewModel.RaceID);
-        createViewModel.HairColorSelectList = new SelectList(_context.HairColor, nameof(HairColor.Id), nameof(HairColor.Name), createViewModel.HairColorID);
-        createViewModel.EyeColorSelectList = new SelectList(_context.EyeColor, nameof(EyeColor.Id), nameof(EyeColor.Name), createViewModel.EyeColorID);
-        createViewModel.MoviesSelectList = new MultiSelectList(_context.Movie, nameof(Movie.Id), nameof(Movie.Title), createViewModel.MovieID);
-        return View(createViewModel);
+        viewModel.PlanetList = await _context.Planet.Select(p => p.Name).ToListAsync();
+        viewModel.RaceList = await _context.Race.Select(r => r.Name).ToListAsync();
+        viewModel.HairColorList = await _context.HairColor.Select(h => h.Name).ToListAsync();
+        viewModel.EyeColorList = await _context.EyeColor.Select(e => e.Name).ToListAsync();
+        viewModel.MoviesList = await _context.Movie.Select(m => m.Title).ToListAsync();
+        return View(viewModel);
     }
 
     // GET: Edit
-    public async Task<IActionResult> Edit(int? id)
+    public async Task<IActionResult> Edit(string id)
     {
         if (id == null || _context.Character == null)
         {
@@ -138,7 +143,7 @@ public class HomeController : Controller
         }
 
         var character = await _context.Character
-            .Where(c => c.Id == id)
+            .Where(c => c.Name.Equals(id))
             .Include(c => c.Planet)
             .Include(c => c.Race)
             .Include(c => c.HairColor)
@@ -152,22 +157,22 @@ public class HomeController : Controller
 
         EditViewModel editViewModel = new EditViewModel
         {
-            Id = character.Id,
             Name = character.Name,
             OriginalName = character.OriginalName,
             BirthDate = character.BirthDate,
-            PlanetID = character.PlanetID,
+            Planet = character.Planet.Name,
             Gender = character.Gender,
-            RaceID = character.RaceID,
+            Race = character.Race.Name,
             Height = character.Height,
-            HairColorID = character.HairColorID,
-            EyeColorID = character.EyeColorID,
+            HairColor = character.HairColor.Name,
+            EyeColor = character.EyeColor.Name,
             History = character.History,
-            PlanetSelectList = new SelectList(_context.Planet, nameof(Planet.Id), nameof(Planet.Name), character.PlanetID),
-            RaceSelectList = new SelectList(_context.Race, nameof(Race.Id), nameof(Race.Name), character.RaceID),
-            HairColorSelectList = new SelectList(_context.HairColor, nameof(HairColor.Id), nameof(HairColor.Name), character.HairColorID),
-            EyeColorSelectList = new SelectList(_context.EyeColor, nameof(EyeColor.Id), nameof(EyeColor.Name), character.EyeColorID),
-            MoviesSelectList = new SelectList(_context.Movie.Where(m => !character.Movies.Contains(m)), nameof(Movie.Id), nameof(Movie.Title))
+            Movies = character.Movies.Select(m => m.Title).ToList(),
+            PlanetList = await _context.Planet.Select(p => p.Name).ToListAsync(),
+            RaceList = await _context.Race.Select(r => r.Name).ToListAsync(),
+            HairColorList = await _context.HairColor.Select(h => h.Name).ToListAsync(),
+            EyeColorList = await _context.EyeColor.Select(e => e.Name).ToListAsync(),
+            MoviesList = await _context.Movie.Where(m => !character.Movies.Contains(m)).Select(m => m.Title).ToListAsync()
         };
 
         return View(editViewModel);
@@ -176,9 +181,9 @@ public class HomeController : Controller
     // POST: Edit
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, EditViewModel editViewModel)
+    public async Task<IActionResult> Edit(string name, EditViewModel editViewModel)
     {
-        if (id != editViewModel.Id)
+        if (!name.Equals(editViewModel.Name))
         {
             return NotFound();
         }
@@ -188,18 +193,18 @@ public class HomeController : Controller
         {
             try
             {
-                Character? characterToUptate = await _context.Character.Where(c => c.Id == id).Include(c => c.Movies).SingleOrDefaultAsync();
+                Character? characterToUptate = await _context.Character.Where(c => c.Name.Equals(name)).Include(c => c.Movies).SingleOrDefaultAsync();
                 if (characterToUptate != null)
                 {
                     characterToUptate.Name = editViewModel.Name;
                     characterToUptate.OriginalName = editViewModel.OriginalName;
-                    characterToUptate.PlanetID = editViewModel.PlanetID;
-                    characterToUptate.RaceID = editViewModel.RaceID;
+                    characterToUptate.PlanetID = _context.Planet.Where(p => p.Name.Equals(editViewModel.Planet)).Select(p => p.Id).SingleOrDefault();
+                    characterToUptate.RaceID = _context.Race.Where(r => r.Name.Equals(editViewModel.Race)).Select(r => r.Id).SingleOrDefault();
                     characterToUptate.Gender = editViewModel.Gender;
                     characterToUptate.Height = editViewModel.Height;
-                    characterToUptate.HairColorID = editViewModel.HairColorID;
-                    characterToUptate.EyeColorID = editViewModel.EyeColorID;
-                    characterToUptate.Movies = _context.Movie.Where(m => editViewModel.MovieID.Contains(m.Id)).ToList();
+                    characterToUptate.HairColorID = _context.HairColor.Where(h => h.Name.Equals(editViewModel.HairColor)).Select(h => h.Id).SingleOrDefault();
+                    characterToUptate.EyeColorID = _context.EyeColor.Where(e => e.Name.Equals(editViewModel.EyeColor)).Select(e => e.Id).SingleOrDefault();
+                    characterToUptate.Movies = _context.Movie.Where(m => editViewModel.Movies.Contains(m.Title)).ToList();
                 }
 
                 _context.Update(characterToUptate);
@@ -207,7 +212,7 @@ public class HomeController : Controller
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CharacterExists(id))
+                if (!CharacterExists(name))
                 {
                     return NotFound();
                 }
@@ -219,11 +224,11 @@ public class HomeController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        editViewModel.PlanetSelectList = new SelectList(_context.Planet, nameof(Planet.Id), nameof(Planet.Name), editViewModel.PlanetID);
-        editViewModel.RaceSelectList = new SelectList(_context.Race, nameof(Race.Id), nameof(Race.Name), editViewModel.RaceID);
-        editViewModel.HairColorSelectList = new SelectList(_context.HairColor, nameof(HairColor.Id), nameof(HairColor.Name), editViewModel.HairColorID);
-        editViewModel.EyeColorSelectList = new SelectList(_context.EyeColor, nameof(EyeColor.Id), nameof(EyeColor.Name), editViewModel.EyeColorID);
-        editViewModel.MoviesSelectList = new SelectList(_context.Movie.Where(m => !editViewModel.MovieID.Contains(m.Id)), nameof(Movie.Id), nameof(Movie.Title));
+        editViewModel.PlanetList = await _context.Planet.Select(p => p.Name).ToListAsync();
+        editViewModel.RaceList = await _context.Race.Select(r => r.Name).ToListAsync();
+        editViewModel.HairColorList = await _context.HairColor.Select(h => h.Name).ToListAsync();
+        editViewModel.EyeColorList = await _context.EyeColor.Select(e => e.Name).ToListAsync();
+        editViewModel.MoviesList = await _context.Movie.Select(m => m.Title).ToListAsync();
 
         return View(editViewModel);
     }
@@ -233,39 +238,31 @@ public class HomeController : Controller
         // TODO: откючить валидацию для PlanetID когда задано PlanetName
         // TODO: разобраться в ситуации когда заданы оба (задача валидации на клиенте)
         // можно будет убрать проверку на null для viewModel.PlanetName
-        var planet = await _context.Planet.SingleOrDefaultAsync(p => p.Name.Equals(viewModel.PlanetName)
-                                                                                        || (viewModel.PlanetName == null && p.Id == viewModel.PlanetID));
-        if (planet == null && viewModel.PlanetName != null)
+        var planet = await _context.Planet.SingleOrDefaultAsync(p => p.Name.Equals(viewModel.Planet));
+        if (planet == null)
         {
-            planet = new Planet { Name = viewModel.PlanetName };
+            planet = new Planet { Name = viewModel.Planet };
         }
-        viewModel.PlanetName = null;
 
-        var race = await _context.Race.SingleOrDefaultAsync(r => r.Name.Equals(viewModel.RaceName)
-                                                                                        || (viewModel.RaceName == null && r.Id == viewModel.RaceID));
-        if (race == null && viewModel.RaceName != null)
+        var race = await _context.Race.SingleOrDefaultAsync(r => r.Name.Equals(viewModel.Race));
+        if (race == null)
         {
-            race = new Race { Name = viewModel.RaceName };
+            race = new Race { Name = viewModel.Race };
         }
-        viewModel.RaceName = null;
 
-        var hairColor = await _context.HairColor.SingleOrDefaultAsync(h => h.Name.Equals(viewModel.HairColorName)
-                                                                                        || (viewModel.HairColorName == null && h.Id == viewModel.HairColorID));
-        if (hairColor == null && viewModel.HairColorName != null)
+        var hairColor = await _context.HairColor.SingleOrDefaultAsync(h => h.Name.Equals(viewModel.HairColor));
+        if (hairColor == null)
         {
-            hairColor = new HairColor { Name = viewModel.HairColorName };
+            hairColor = new HairColor { Name = viewModel.HairColor };
         }
-        viewModel.HairColorName = null;
 
-        var eyeColor = await _context.EyeColor.SingleOrDefaultAsync(e => e.Name.Equals(viewModel.EyeColorName)
-                                                                                        || (viewModel.EyeColorName == null && e.Id == viewModel.EyeColorID));
-        if (eyeColor == null && viewModel.EyeColorName != null)
+        var eyeColor = await _context.EyeColor.SingleOrDefaultAsync(e => e.Name.Equals(viewModel.EyeColor));
+        if (eyeColor == null)
         {
-            eyeColor = new EyeColor { Name = viewModel.EyeColorName };
+            eyeColor = new EyeColor { Name = viewModel.EyeColor };
         }
-        viewModel.EyeColorName = null;
 
-        var movies = viewModel.MovieID != null ? await _context.Movie.Where(m => viewModel.MovieID.Contains(m.Id)).ToListAsync() : new List<Movie>();
+        var movies = viewModel.Movies != null ? await _context.Movie.Where(m => viewModel.Movies.Contains(m.Title)).ToListAsync() : new List<Movie>();
         IEnumerable<Movie>? moviesByTitle = viewModel.MovieTitle != null ? await _context.Movie.Where(m => viewModel.MovieTitle.Contains(m.Title)).ToListAsync() : null;
         if (viewModel.MovieTitle != null)
         {
@@ -293,13 +290,13 @@ public class HomeController : Controller
 
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
+    public async Task<IActionResult> DeleteConfirmed(string name)
     {
         if (_context.Character == null)
         {
             return Problem($"Entity set ${typeof(Character)} is null.");
         }
-        var character = await _context.Character.FindAsync(id);
+        var character = await _context.Character.FindAsync(name);
         if (character != null)
         {
             _context.Character.Remove(character);
@@ -309,9 +306,9 @@ public class HomeController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private bool CharacterExists(int id)
+    private bool CharacterExists(string name)
     {
-        return (_context.Character?.Any(e => e.Id == id)).GetValueOrDefault();
+        return (_context.Character?.Any(e => e.Name.Equals(name))).GetValueOrDefault();
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

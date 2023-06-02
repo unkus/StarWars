@@ -6,30 +6,28 @@ namespace StarWars.ViewModels;
 
 public class IndexViewModel
 {
-    public Range? BirthDate { get; set; }
-    
     // думаю это плохое решение для текста
     [Display(Name = "Дата рождения c")]
     public int? BeginDate { get; set; }
-    
+
     // тоже что и для BeginDate
     [Display(Name = "по")]
     public int? EndDate { get; set; }
 
     [Display(Name = "Планета")]
     [DisplayFormat(NullDisplayText = "Выберите планету...")]
-    public int? PlanetID { get; set; }
-    
+    public string? Planet { get; set; }
+
     [Display(Name = "Пол")]
     [DisplayFormat(NullDisplayText = "Выберите пол...")]
     public Gender? Gender { get; set; }
 
     [Display(Name = "Фильмы")]
     [DisplayFormat(NullDisplayText = "Выберите фильмы...")]
-    public IEnumerable<int>? MovieID { get; set; }
+    public IEnumerable<string>? Movies { get; set; }
 
-    public ICollection<Character>? Characters { get; set; }
+    public ICollection<CardViewModel>? Characters { get; set; }
 
-    public IEnumerable<SelectListItem>? PlanetSelectList { get; set; }
-    public IEnumerable<SelectListItem>? MovieSelectList { get; set; }
+    public IEnumerable<string>? PlanetList { get; set; }
+    public IEnumerable<string>? MovieList { get; set; }
 }
