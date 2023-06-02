@@ -7,17 +7,6 @@ namespace StarWars.ViewModels;
 public class CreateViewModel : DetailsViewModel
 {
 
-    public string? PlanetName { get; set; }
-
-    public string? RaceName { get; set; }
-
-    public string? HairColorName { get; set; }
-
-    public string? EyeColorName { get; set; }
-
-    [Display(Name = "Новый фильм")]
-    public ICollection<string>? MovieTitle { get; set; }
-
     [BindNever]
     public IEnumerable<string>? PlanetList { get; set; }
 

@@ -35,11 +35,12 @@
             <div class="input-group py-2 gap-2">
                 <label asp-for="Planet" class="input-group-text col-4 fw-bold"></label>
                 <div class="col">
-                    <input asp-for="Planet" class="form-select" list="Planets" placeholder="Выберите планету..."></input>
+                    <input asp-for="Planet" class="form-select" list="Planets"
+                        placeholder="Выберите планету..."></input>
                     <datalist id="Planets">
                         @foreach (var item in @Model.PlanetList)
                         {
-                            <option value="@item"/>
+                            <option value="@item" />
                         }
                     </datalist>
                     <span asp-validation-for="Planet" class="text-danger"></span>
@@ -59,7 +60,7 @@
                     <datalist id="Races">
                         @foreach (var item in @Model.RaceList)
                         {
-                            <option value="@item"/>
+                            <option value="@item" />
                         }
                     </datalist>
                     <span asp-validation-for="Race" class="text-danger"></span>
@@ -68,34 +69,40 @@
             <div class="input-group py-2 gap-2">
                 <label asp-for="Height" class="input-group-text col-4 fw-bold"></label>
                 <div class="col">
-                    <input asp-for="Height" class="form-control floatNumber" step="0.01"/>
+                    <input asp-for="Height" class="form-control floatNumber" step="0.01" />
                     <span asp-validation-for="Height" class="text-danger"></span>
                 </div>
             </div>
             <div class="input-group py-2 gap-2">
                 <label asp-for="HairColor" class="input-group-text col-4 fw-bold"></label>
                 <div class="col">
-                    <input asp-for="HairColor" class="form-select" list="HairColors" placeholder="Выберите цвет..."></input>
-                    <datalist id="HairColors">
-                        @foreach (var item in @Model.HairColorList)
-                        {
-                            <option value="@item"/>
-                        }
-                    </datalist>
-                    <span asp-validation-for="HairColor" class="text-danger"></span>
+                    <div class="col">
+                        <input asp-for="HairColor" class="form-select" list="HairColors"
+                            placeholder="Выберите цвет..."></input>
+                        <datalist id="HairColors">
+                            @foreach (var item in @Model.HairColorList)
+                            {
+                                <option value="@item" />
+                            }
+                        </datalist>
+                        <span asp-validation-for="HairColor" class="text-danger"></span>
+                    </div>
                 </div>
-            </div>
-            <div class="input-group py-2 gap-2">
-                <label asp-for="EyeColor" class="input-group-text col-4 fw-bold"></label>
-                <div class="col">
-                    <input asp-for="EyeColor" class="form-select" list="EyeColors" placeholder="Выберите цвет..."></input>
-                    <datalist id="EyeColors">
-                        @foreach (var item in @Model.EyeColorList)
-                        {
-                            <option value="@item"/>
-                        }
-                    </datalist>
-                    <span asp-validation-for="EyeColor" class="text-danger"></span>
+                <div class="input-group py-2 gap-2">
+                    <label asp-for="EyeColor" class="input-group-text col-4 fw-bold"></label>
+                    <div class="col">
+                        <div class="col">
+                            <input asp-for="EyeColor" class="form-select" list="EyeColors"
+                                placeholder="Выберите цвет..."></input>
+                            <datalist id="EyeColors">
+                                @foreach (var item in @Model.EyeColorList)
+                                {
+                                    <option value="@item" />
+                                }
+                            </datalist>
+                            <span asp-validation-for="EyeColor" class="text-danger"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -105,7 +112,7 @@
                 <textarea asp-for="History" class="form-control" rows="4"></textarea>
                 <span asp-validation-for="History" class="text-danger"></span>
             </div>
-            
+
             <label asp-for="Movies" class="form-control border-0 fw-bold"></label>
             <dl id="attached-movie-list" class="col gap-1 border-1">
                 @foreach (var item in @Model.Movies)
@@ -118,17 +125,19 @@
             </dl>
 
             <div class="col">
-                <select id="movie-holder" asp-for="Movies" class ="form-select">
-                    @foreach(var item in @Model.Movies) {
-                        <option value="@item" selected/>
+                <select id="movie-holder" asp-for="Movies" class="form-select" hidden>
+                    @foreach (var item in @Model.Movies)
+                    {
+                        <option value="@item" selected />
                     }
                 </select>
                 <div class="input-group py-2">
-                    <input id="selected-movie" class="form-select" list="detached-movie-list" placeholder="Выберите фильм..."></input>
+                    <input id="selected-movie" class="form-select" list="detached-movie-list"
+                        placeholder="Выберите фильм..."></input>
                     <datalist id="detached-movie-list">
                         @foreach (var item in @Model.MoviesList)
                         {
-                            <option value="@item"/>
+                            <option value="@item" selected />
                         }
                     </datalist>
                     <button id="attach-movie-button" class="btn btn-outline-primary" type="button">Добавить</button>
@@ -139,25 +148,27 @@
     <div class="btn-group gap-2" role="group">
         <a type="button" class="btn btn-secondary" onclick="history.go(-1)">Отмена</a>
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteConfirmation">Удалить</button>
-        <input class="btn btn-primary" type="submit" value="Сохранить"/>
+        <input class="btn btn-primary" type="submit" value="Сохранить" />
     </div>
 </form>
 
 <!-- Модальное окно -->
-<div class="modal fade" id="deleteConfirmation" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteConfirmationLabel" aria-hidden="true">
+<div class="modal fade" id="deleteConfirmation" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="deleteConfirmationLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <form method="post">
                 <input type="hidden" asp-for="Name" />
                 <div class="modal-header">
                     <h5 class="modal-title" id="deleteConfirmationLabel">Удаление персонажа</h5>
-                    <input class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Закрыть"/>
+                    <input class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Закрыть" />
                 </div>
                 <div class="modal-body">
                     Действительно удалить?
                 </div>
                 <div class="modal-footer">
-                    <input class="btn btn-primary" type="submit" asp-action="Delete" asp-route-id="@Model.Name" value="Подтвердить"/>
+                    <input class="btn btn-primary" type="submit" asp-action="Delete" asp-route-name="@Model.Name"
+                        value="Подтвердить" />
                     <a class="btn btn-secondary" data-bs-dismiss="modal">Отмена</a>
                 </div>
             </form>
@@ -166,6 +177,8 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script src="~/js/movie.js" asp-append-version="true"></script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+<script src="~/js/movie.js" asp-append-version="true"></script>
 }

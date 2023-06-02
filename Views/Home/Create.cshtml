@@ -35,11 +35,12 @@
             <div class="input-group py-2 gap-2">
                 <label asp-for="Planet" class="input-group-text col-4 fw-bold"></label>
                 <div class="col">
-                    <input asp-for="Planet" class="form-select" list="Planets" placeholder="Выберите планету..."></input>
+                    <input asp-for="Planet" class="form-select" list="Planets"
+                        placeholder="Выберите планету..."></input>
                     <datalist id="Planets">
                         @foreach (var item in @Model.PlanetList)
                         {
-                            <option value="@item"/>
+                            <option value="@item" />
                         }
                     </datalist>
                     <span asp-validation-for="Planet" class="text-danger"></span>
@@ -48,9 +49,7 @@
             <div class="input-group py-2 gap-2">
                 <label asp-for="Gender" class="input-group-text col-4 fw-bold"></label>
                 <div class="col">
-                    <select asp-for="Gender" class="form-select" asp-items="Html.GetEnumSelectList<Gender>()">
-                        <option>Выберите пол...</option>
-                    </select>
+                    <select asp-for="Gender" class="form-select" asp-items="Html.GetEnumSelectList<Gender>()"></select>
                     <span asp-validation-for="Gender" class="text-danger"></span>
                 </div>
             </div>
@@ -61,7 +60,7 @@
                     <datalist id="Races">
                         @foreach (var item in @Model.RaceList)
                         {
-                            <option value="@item"/>
+                            <option value="@item" />
                         }
                     </datalist>
                     <span asp-validation-for="Race" class="text-danger"></span>
@@ -70,7 +69,7 @@
             <div class="input-group py-2 gap-2">
                 <label asp-for="Height" class="input-group-text col-4 fw-bold"></label>
                 <div class="col">
-                    <input asp-for="Height" class="form-control floatNumber" step="0.01"/>
+                    <input asp-for="Height" class="form-control floatNumber" step="0.01" />
                     <span asp-validation-for="Height" class="text-danger"></span>
                 </div>
             </div>
@@ -78,28 +77,32 @@
                 <label asp-for="HairColor" class="input-group-text col-4 fw-bold"></label>
                 <div class="col">
                     <div class="col">
-                    <input asp-for="HairColor" class="form-select" list="HairColors" placeholder="Выберите цвет..."></input>
-                    <datalist id="HairColors">
-                        @foreach (var item in @Model.HairColorList)
-                        {
-                            <option value="@item"/>
-                        }
-                    </datalist>
-                    <span asp-validation-for="HairColor" class="text-danger"></span>
+                        <input asp-for="HairColor" class="form-select" list="HairColors"
+                            placeholder="Выберите цвет..."></input>
+                        <datalist id="HairColors">
+                            @foreach (var item in @Model.HairColorList)
+                            {
+                                <option value="@item" />
+                            }
+                        </datalist>
+                        <span asp-validation-for="HairColor" class="text-danger"></span>
+                    </div>
                 </div>
-            </div>
-            <div class="input-group py-2 gap-2">
-                <label asp-for="EyeColor" class="input-group-text col-4 fw-bold"></label>
-                <div class="col">
+                <div class="input-group py-2 gap-2">
+                    <label asp-for="EyeColor" class="input-group-text col-4 fw-bold"></label>
                     <div class="col">
-                    <input asp-for="EyeColor" class="form-select" list="EyeColors" placeholder="Выберите цвет..."></input>
-                    <datalist id="EyeColors">
-                        @foreach (var item in @Model.EyeColorList)
-                        {
-                            <option value="@item"/>
-                        }
-                    </datalist>
-                    <span asp-validation-for="EyeColor" class="text-danger"></span>
+                        <div class="col">
+                            <input asp-for="EyeColor" class="form-select" list="EyeColors"
+                                placeholder="Выберите цвет..."></input>
+                            <datalist id="EyeColors">
+                                @foreach (var item in @Model.EyeColorList)
+                                {
+                                    <option value="@item" />
+                                }
+                            </datalist>
+                            <span asp-validation-for="EyeColor" class="text-danger"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -109,17 +112,18 @@
                 <textarea asp-for="History" class="form-control" rows="4"></textarea>
                 <span asp-validation-for="History" class="text-danger"></span>
             </div>
-            
+
             <label asp-for="Movies" class="form-control border-0 fw-bold"></label>
             <dl id="attached-movie-list" class="col gap-1 border-1"></dl>
             <div class="col">
-                <select id="movie-holder" asp-for="Movies" class ="form-select" hidden></select>
+                <select id="movie-holder" asp-for="Movies" class="form-select" hidden></select>
                 <div class="input-group py-2">
-                    <input class="form-select" list="detached-movie-list" placeholder="Выберите фильм..."></input>
+                    <input id="selected-movie" class="form-select" list="detached-movie-list"
+                        placeholder="Выберите фильм..."></input>
                     <datalist id="detached-movie-list">
                         @foreach (var item in @Model.MoviesList)
                         {
-                            <option value="@item"/>
+                            <option value="@item" selected />
                         }
                     </datalist>
                     <button id="attach-movie-button" class="btn btn-outline-primary" type="button">Добавить</button>
@@ -129,12 +133,13 @@
     </div>
     <div class="btn-group gap-2" role="group">
         <a type="button" class="btn btn-secondary" onclick="history.go(-1)">Отмена</a>
-        <input class="btn btn-primary" type="submit" value="Сохранить"/>
+        <input class="btn btn-primary" type="submit" value="Сохранить" />
     </div>
-    
 </form>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script src="~/js/movie.js" asp-append-version="true"></script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+<script src="~/js/movie.js" asp-append-version="true"></script>
 }

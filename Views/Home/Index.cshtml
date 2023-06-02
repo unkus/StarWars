@@ -37,7 +37,7 @@
                     <select asp-for="Movies" class="form-select" multiple>
                         @foreach (var item in @Model.MovieList)
                         {
-                            <option value="item"></option>
+                            <option value="@item">@item</option>
                         }
                     </select>
                 </div>
@@ -69,8 +69,8 @@
                     </div>
                     <div class="col">
                         <div class="btn-group gap-2" role="group">
-                            <a class="btn btn-primary" role="button" asp-action="Details" asp-route-id="@character.Name">Детали</a>
-                            <a class="btn btn-primary" role="button" asp-action="Edit" asp-route-id="@character.Name">Редактировать</a>
+                            <a class="btn btn-primary" role="button" asp-action="Details" asp-route-name="@character.Name">Детали</a>
+                            <a class="btn btn-primary" role="button" asp-action="Edit" asp-route-name="@character.Name">Редактировать</a>
                         </div>
                     </div>
                 </div>
