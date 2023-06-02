@@ -1,14 +1,10 @@
 ﻿using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using StarWars.Data;
 using StarWars.Models;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using StarWars.ViewModels;
-using System.Net;
-using Microsoft.Extensions.Primitives;
-using System.Linq.Expressions;
+using AutoMapper;
 
 namespace StarWars.Controllers;
 
@@ -16,11 +12,13 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private readonly StarWarsContext _context;
+    private readonly IMapper _mapping;
 
-    public HomeController(ILogger<HomeController> logger, StarWarsContext context)
+    public HomeController(ILogger<HomeController> logger, StarWarsContext context, IMapper mapping)
     {
         _logger = logger;
         _context = context;
+        _mapping = mapping;
     }
 
     // GET: Index
@@ -59,11 +57,7 @@ public class HomeController : Controller
             characterList = await _context.Character.ToListAsync();
         }
 
-        viewModel.Characters = characterList.Select(c => new CardViewModel
-        {
-            Name = c.Name,
-            OriginalName = c.OriginalName
-        }).ToList();
+        viewModel.Characters = characterList.Select(c => _mapping.Map<CardViewModel>(c)).ToList();
 
         return View(viewModel);
     }
@@ -88,20 +82,7 @@ public class HomeController : Controller
             return NotFound();
         }
 
-        return View(new DetailsViewModel
-        {
-            Name = character.Name,
-            OriginalName = character.OriginalName,
-            BirthDate = character.BirthDate,
-            Planet = character.Planet.Name,
-            Gender = character.Gender,
-            Race = character.Race.Name,
-            Height = character.Height,
-            HairColor = character.HairColor.Name,
-            EyeColor = character.EyeColor.Name,
-            History = character.History,
-            Movies = character.Movies.Select(m => m.Title)
-        });
+        return View(_mapping.Map<DetailsViewModel>(character));
     }
 
     // GET: Create
@@ -120,7 +101,7 @@ public class HomeController : Controller
     // POST: Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(EditViewModel viewModel)
+    public async Task<IActionResult> Create(CreateViewModel viewModel)
     {
         if (ModelState.IsValid)
         {
@@ -134,20 +115,14 @@ public class HomeController : Controller
                 movies.Add(await _context.Movie.SingleOrDefaultAsync(e => e.Title.Equals(title)) ?? new Movie { Title = title });
             }
 
-            _context.Add(new Character
-            {
-                Name = viewModel.Name,
-                OriginalName = viewModel.OriginalName,
-                BirthDate = viewModel.BirthDate,
-                Planet = planet ?? new Planet { Name = viewModel.Planet },
-                Gender = viewModel.Gender,
-                Race = race ?? new Race { Name = viewModel.Race },
-                Height = viewModel.Height,
-                HairColor = hairColor ?? new HairColor { Name = viewModel.HairColor },
-                EyeColor = eyeColor ?? new EyeColor { Name = viewModel.EyeColor },
-                History = viewModel.History,
-                Movies = movies
-            });
+            Character character = _mapping.Map<Character>(viewModel);
+            character.Planet = planet ?? character.Planet;
+            character.Race = race ?? character.Race;
+            character.HairColor = hairColor ?? character.HairColor;
+            character.EyeColor = eyeColor ?? character.EyeColor;
+            character.Movies = movies;
+
+            _context.Add(character);
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -182,26 +157,14 @@ public class HomeController : Controller
             return NotFound();
         }
 
-        return View(new EditViewModel
-        {
-            Name = character.Name,
-            OriginalName = character.OriginalName,
-            BirthDate = character.BirthDate,
-            Planet = character.Planet.Name,
-            Gender = character.Gender,
-            Race = character.Race.Name,
-            Height = character.Height,
-            HairColor = character.HairColor.Name,
-            EyeColor = character.EyeColor.Name,
-            History = character.History,
-            Movies = character.Movies.Select(m => m.Title).ToList(),
+        EditViewModel viewModel = _mapping.Map<EditViewModel>(character);
+        viewModel.PlanetList = await _context.Planet.Select(p => p.Name).ToListAsync();
+        viewModel.RaceList = await _context.Race.Select(r => r.Name).ToListAsync();
+        viewModel.HairColorList = await _context.HairColor.Select(h => h.Name).ToListAsync();
+        viewModel.EyeColorList = await _context.EyeColor.Select(e => e.Name).ToListAsync();
+        viewModel.MoviesList = await _context.Movie.Where(m => !character.Movies.Contains(m)).Select(m => m.Title).ToListAsync();
 
-            PlanetList = await _context.Planet.Select(p => p.Name).ToListAsync(),
-            RaceList = await _context.Race.Select(r => r.Name).ToListAsync(),
-            HairColorList = await _context.HairColor.Select(h => h.Name).ToListAsync(),
-            EyeColorList = await _context.EyeColor.Select(e => e.Name).ToListAsync(),
-            MoviesList = await _context.Movie.Where(m => !character.Movies.Contains(m)).Select(m => m.Title).ToListAsync()
-        });
+        return View(viewModel);
     }
 
     // POST: Edit
@@ -218,6 +181,12 @@ public class HomeController : Controller
         {
             try
             {
+                Character? characterToUptate = await _context.Character.Where(c => c.Name.Equals(name)).Include(c => c.Movies).SingleOrDefaultAsync();
+                if (characterToUptate is null)
+                {
+                    return NotFound();
+                }
+
                 Planet? planet = await _context.Planet.SingleOrDefaultAsync(p => p.Name.Equals(viewModel.Planet));
                 Race? race = await _context.Race.SingleOrDefaultAsync(r => r.Name.Equals(viewModel.Race));
                 HairColor? hairColor = await _context.HairColor.SingleOrDefaultAsync(h => h.Name.Equals(viewModel.HairColor));
@@ -228,26 +197,15 @@ public class HomeController : Controller
                     movies.Add(await _context.Movie.SingleOrDefaultAsync(e => e.Title.Equals(title)) ?? new Movie { Title = title });
                 }
 
-                Character? characterToUptate = await _context.Character.Where(c => c.Name.Equals(name)).Include(c => c.Movies).SingleOrDefaultAsync();
-                if (characterToUptate != null)
-                {
-                    characterToUptate.Name = viewModel.Name;
-                    characterToUptate.OriginalName = viewModel.OriginalName;
-                    characterToUptate.Planet = planet ?? new Planet { Name = viewModel.Planet };
-                    characterToUptate.Gender = viewModel.Gender;
-                    characterToUptate.Race = race ?? new Race { Name = viewModel.Race };
-                    characterToUptate.Height = viewModel.Height;
-                    characterToUptate.HairColor = hairColor ?? new HairColor { Name = viewModel.HairColor };
-                    characterToUptate.EyeColor = eyeColor ?? new EyeColor { Name = viewModel.EyeColor };
-                    characterToUptate.Movies = movies;
+                Character character = _mapping.Map<EditViewModel, Character>(viewModel, characterToUptate);
+                character.Planet = planet ?? character.Planet;
+                character.Race = race ?? character.Race;
+                character.HairColor = hairColor ?? character.HairColor;
+                character.EyeColor = eyeColor ?? character.EyeColor;
+                character.Movies = movies;
 
-                    _context.Update(characterToUptate);
-                    await _context.SaveChangesAsync();
-                }
-                else
-                {
-                    return NotFound();
-                }
+                _context.Update(characterToUptate);
+                await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {

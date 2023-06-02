@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using StarWars.Models;
 using StarWars.Data;
+using StarWars.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -19,6 +19,7 @@ else
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddAutoMapper(typeof(StarWarsMappingProfile));
 
 var app = builder.Build();
 

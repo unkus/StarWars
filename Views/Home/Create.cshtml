@@ -49,7 +49,9 @@
             <div class="input-group py-2 gap-2">
                 <label asp-for="Gender" class="input-group-text col-4 fw-bold"></label>
                 <div class="col">
-                    <select asp-for="Gender" class="form-select" asp-items="Html.GetEnumSelectList<Gender>()"></select>
+                    <select asp-for="Gender" class="form-select" asp-items="Html.GetEnumSelectList<Gender>()">
+                        <option>Выберите пол...</option>
+                    </select>
                     <span asp-validation-for="Gender" class="text-danger"></span>
                 </div>
             </div>
@@ -114,9 +116,28 @@
             </div>
 
             <label asp-for="Movies" class="form-control border-0 fw-bold"></label>
-            <dl id="attached-movie-list" class="col gap-1 border-1"></dl>
+            <dl id="attached-movie-list" class="col gap-1 border-1">
+                @if(@Model.Movies != null)
+                {
+                    @foreach (var item in @Model.Movies)
+                    {
+                        <dd>
+                            <span>@item</span>
+                            <button id="detach-movie-button" class="btn-close btn-sm border-0" type="button"></button>
+                        </dd>
+                    }
+                }
+            </dl>
             <div class="col">
-                <select id="movie-holder" asp-for="Movies" class="form-select" hidden></select>
+                <select id="movie-holder" asp-for="Movies" class="form-select" hidden>
+                    @if(@Model.Movies != null)
+                    {
+                        @foreach (var item in @Model.Movies)
+                        {
+                            <option value="@item" selected />
+                        }
+                    }
+                </select>
                 <div class="input-group py-2">
                     <input id="selected-movie" class="form-select" list="detached-movie-list"
                         placeholder="Выберите фильм..."></input>
