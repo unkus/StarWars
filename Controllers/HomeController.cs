@@ -5,31 +5,29 @@ using StarWars.Data;
 using StarWars.Models;
 using StarWars.ViewModels;
 using AutoMapper;
+using StarWars.Repositories;
 
 namespace StarWars.Controllers;
 
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-    private readonly StarWarsContext _context;
     private readonly IMapper _mapping;
+
+    private UnitOfWork _unitOfWork;
 
     public HomeController(ILogger<HomeController> logger, StarWarsContext context, IMapper mapping)
     {
         _logger = logger;
-        _context = context;
         _mapping = mapping;
+        _unitOfWork = new UnitOfWork { _context = context };
     }
 
     // GET: Index
     public async Task<IActionResult> Index(IndexViewModel viewModel)
     {
-        if (_context.Character == null)
-        {
-            return NotFound();
-        }
-        viewModel.PlanetList = await _context.Planet.Select(p => p.Name).ToListAsync();
-        viewModel.MovieList = await _context.Movie.Select(m => m.Title).ToListAsync();
+        viewModel.PlanetList = _unitOfWork.PlanetRepository.Get().Select(p => p.Name).ToList();
+        viewModel.MovieList = _unitOfWork.MovieRepository.Get().Select(m => m.Title).ToList();
 
         if (viewModel.Gender == null)
         {
@@ -37,27 +35,25 @@ public class HomeController : Controller
             ModelState.MarkFieldSkipped(nameof(IndexViewModel.Gender));
         }
 
-        IEnumerable<Character> characterList;
+        IEnumerable<Character>? characterList;
         if (ModelState.IsValid)
         {
-            characterList = await _context.Character
-                .Where(
-                    c => (viewModel.BeginDate == null || viewModel.BeginDate < c.BirthDate)
+            characterList = _unitOfWork.CharacterRepository.Get(
+                    filter: c => (viewModel.BeginDate == null || viewModel.BeginDate < c.BirthDate)
                     && (viewModel.EndDate == null || c.BirthDate > viewModel.EndDate)
                     && (viewModel.Planet == null || c.Planet.Name.Equals(viewModel.Planet))
                     && (viewModel.Gender == null || c.Gender == viewModel.Gender)
-                    && (viewModel.Movies == null || c.Movies!.Any(m => viewModel.Movies.Contains(m.Title)))
-                )
-                .Include(c => c.Planet)
-                .Include(c => c.Movies)
-                .ToListAsync();
+                    && (viewModel.Movies == null || c.Movies!.Any(m => viewModel.Movies.Contains(m.Title))));
         }
         else
         {
-            characterList = await _context.Character.ToListAsync();
+            characterList = _unitOfWork.CharacterRepository.Get();
         }
 
-        viewModel.Characters = characterList.Select(c => _mapping.Map<CardViewModel>(c)).ToList();
+        if (characterList is not null)
+        {
+            viewModel.Characters = characterList.Select(c => _mapping.Map<CardViewModel>(c)).ToList();
+        }
 
         return View(viewModel);
     }
@@ -65,18 +61,21 @@ public class HomeController : Controller
     // GET: Details
     public async Task<IActionResult> Details(string name)
     {
-        if (name == null || _context.Character == null)
+        if (name == null)
         {
             return NotFound();
         }
-
-        var character = await _context.Character
-            .Include(c => c.Planet)
-            .Include(c => c.Race)
-            .Include(c => c.HairColor)
-            .Include(c => c.EyeColor)
-            .Include(c => c.Movies)
-            .FirstOrDefaultAsync(c => c.Name.Equals(name));
+        var character = _unitOfWork.CharacterRepository.SingleOrDefault(
+            filter: c => c.Name.Equals(name),
+            includes: new List<string> 
+                {
+                    nameof(Character.Planet),
+                    nameof(Character.Race),
+                    nameof(Character.HairColor),
+                    nameof(Character.EyeColor),
+                    nameof(Character.Movies)
+                }
+            );
         if (character == null)
         {
             return NotFound();
@@ -90,11 +89,11 @@ public class HomeController : Controller
     {
         return View(new CreateViewModel()
         {
-            PlanetList = await _context.Planet.Select(p => p.Name).ToListAsync(),
-            RaceList = await _context.Race.Select(r => r.Name).ToListAsync(),
-            HairColorList = await _context.HairColor.Select(h => h.Name).ToListAsync(),
-            EyeColorList = await _context.EyeColor.Select(e => e.Name).ToListAsync(),
-            MoviesList = await _context.Movie.Select(m => m.Title).ToListAsync()
+            PlanetList = _unitOfWork.PlanetRepository.Get().Select(p => p.Name).ToList(),
+            RaceList = _unitOfWork.RaceRepository.Get().Select(r => r.Name).ToList(),
+            HairColorList = _unitOfWork.HairColorRepository.Get().Select(h => h.Name).ToList(),
+            EyeColorList = _unitOfWork.EyeColorRepository.Get().Select(e => e.Name).ToList(),
+            MoviesList = _unitOfWork.MovieRepository.Get().Select(m => m.Title).ToList()
         });
     }
 
@@ -105,64 +104,57 @@ public class HomeController : Controller
     {
         if (ModelState.IsValid)
         {
-            Planet? planet = await _context.Planet.SingleOrDefaultAsync(p => p.Name.Equals(viewModel.Planet));
-            Race? race = await _context.Race.SingleOrDefaultAsync(r => r.Name.Equals(viewModel.Race));
-            HairColor? hairColor = await _context.HairColor.SingleOrDefaultAsync(h => h.Name.Equals(viewModel.HairColor));
-            EyeColor? eyeColor = await _context.EyeColor.SingleOrDefaultAsync(e => e.Name.Equals(viewModel.EyeColor));
-            ICollection<Movie> movies = new List<Movie>();
+            var planet = _unitOfWork.PlanetRepository.SingleOrDefault(p => p.Name.Equals(viewModel.Planet));
+            var race = _unitOfWork.RaceRepository.SingleOrDefault(r => r.Name.Equals(viewModel.Race));
+            var hairColor = _unitOfWork.HairColorRepository.SingleOrDefault(h => h.Name.Equals(viewModel.HairColor));
+            var eyeColor = _unitOfWork.EyeColorRepository.SingleOrDefault(e => e.Name.Equals(viewModel.EyeColor));
+            var movies = new List<Movie>();
             foreach (string title in viewModel.Movies)
             {
-                movies.Add(await _context.Movie.SingleOrDefaultAsync(e => e.Title.Equals(title)) ?? new Movie { Title = title });
+                movies.Add(_unitOfWork.MovieRepository.SingleOrDefault(e => e.Title.Equals(title)) ?? new Movie { Title = title });
             }
 
-            Character character = _mapping.Map<Character>(viewModel);
+            var character = _mapping.Map<Character>(viewModel);
             character.Planet = planet ?? character.Planet;
             character.Race = race ?? character.Race;
             character.HairColor = hairColor ?? character.HairColor;
             character.EyeColor = eyeColor ?? character.EyeColor;
             character.Movies = movies;
 
-            _context.Add(character);
+            _unitOfWork.CharacterRepository.Insert(character);
 
-            await _context.SaveChangesAsync();
+            _unitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }
 
-        viewModel.PlanetList = await _context.Planet.Select(p => p.Name).ToListAsync();
-        viewModel.RaceList = await _context.Race.Select(r => r.Name).ToListAsync();
-        viewModel.HairColorList = await _context.HairColor.Select(h => h.Name).ToListAsync();
-        viewModel.EyeColorList = await _context.EyeColor.Select(e => e.Name).ToListAsync();
-        viewModel.MoviesList = await _context.Movie.Select(m => m.Title).ToListAsync();
+        viewModel.PlanetList = _unitOfWork.PlanetRepository.Get().Select(p => p.Name).ToList();
+        viewModel.RaceList = _unitOfWork.RaceRepository.Get().Select(r => r.Name).ToList();
+        viewModel.HairColorList = _unitOfWork.HairColorRepository.Get().Select(h => h.Name).ToList();
+        viewModel.EyeColorList = _unitOfWork.EyeColorRepository.Get().Select(e => e.Name).ToList();
+        viewModel.MoviesList = _unitOfWork.MovieRepository.Get().Select(m => m.Title).ToList();
         return View(viewModel);
     }
 
     // GET: Edit
     public async Task<IActionResult> Edit(string name)
     {
-        if (name == null || _context.Character == null)
+        if (name == null)
         {
             return NotFound();
         }
 
-        var character = await _context.Character
-            .Where(c => c.Name.Equals(name))
-            .Include(c => c.Planet)
-            .Include(c => c.Race)
-            .Include(c => c.HairColor)
-            .Include(c => c.EyeColor)
-            .Include(c => c.Movies)
-            .SingleOrDefaultAsync();
+        var character = _unitOfWork.CharacterRepository.SingleOrDefault(c => c.Name.Equals(name));
         if (character == null)
         {
             return NotFound();
         }
 
-        EditViewModel viewModel = _mapping.Map<EditViewModel>(character);
-        viewModel.PlanetList = await _context.Planet.Select(p => p.Name).ToListAsync();
-        viewModel.RaceList = await _context.Race.Select(r => r.Name).ToListAsync();
-        viewModel.HairColorList = await _context.HairColor.Select(h => h.Name).ToListAsync();
-        viewModel.EyeColorList = await _context.EyeColor.Select(e => e.Name).ToListAsync();
-        viewModel.MoviesList = await _context.Movie.Where(m => !character.Movies.Contains(m)).Select(m => m.Title).ToListAsync();
+        var viewModel = _mapping.Map<EditViewModel>(character);
+        viewModel.PlanetList = _unitOfWork.PlanetRepository.Get().Select(p => p.Name).ToList();
+        viewModel.RaceList = _unitOfWork.RaceRepository.Get().Select(r => r.Name).ToList();
+        viewModel.HairColorList = _unitOfWork.HairColorRepository.Get().Select(h => h.Name).ToList();
+        viewModel.EyeColorList = _unitOfWork.EyeColorRepository.Get().Select(e => e.Name).ToList();
+        viewModel.MoviesList = _unitOfWork.MovieRepository.Get(m => !character.Movies.Contains(m)).Select(m => m.Title).ToList();
 
         return View(viewModel);
     }
@@ -181,31 +173,31 @@ public class HomeController : Controller
         {
             try
             {
-                Character? characterToUptate = await _context.Character.Where(c => c.Name.Equals(name)).Include(c => c.Movies).SingleOrDefaultAsync();
+                var characterToUptate = _unitOfWork.CharacterRepository.SingleOrDefault(c => c.Name.Equals(name));
                 if (characterToUptate is null)
                 {
                     return NotFound();
                 }
 
-                Planet? planet = await _context.Planet.SingleOrDefaultAsync(p => p.Name.Equals(viewModel.Planet));
-                Race? race = await _context.Race.SingleOrDefaultAsync(r => r.Name.Equals(viewModel.Race));
-                HairColor? hairColor = await _context.HairColor.SingleOrDefaultAsync(h => h.Name.Equals(viewModel.HairColor));
-                EyeColor? eyeColor = await _context.EyeColor.SingleOrDefaultAsync(e => e.Name.Equals(viewModel.EyeColor));
-                ICollection<Movie> movies = new List<Movie>();
+                var planet = _unitOfWork.PlanetRepository.SingleOrDefault(p => p.Name.Equals(viewModel.Planet));
+                var race = _unitOfWork.RaceRepository.SingleOrDefault(r => r.Name.Equals(viewModel.Race));
+                var hairColor = _unitOfWork.HairColorRepository.SingleOrDefault(h => h.Name.Equals(viewModel.HairColor));
+                var eyeColor = _unitOfWork.EyeColorRepository.SingleOrDefault(e => e.Name.Equals(viewModel.EyeColor));
+                var movies = new List<Movie>();
                 foreach (string title in viewModel.Movies)
                 {
-                    movies.Add(await _context.Movie.SingleOrDefaultAsync(e => e.Title.Equals(title)) ?? new Movie { Title = title });
+                    movies.Add(_unitOfWork.MovieRepository.SingleOrDefault(e => e.Title.Equals(title)) ?? new Movie { Title = title });
                 }
 
-                Character character = _mapping.Map<EditViewModel, Character>(viewModel, characterToUptate);
+                var character = _mapping.Map<EditViewModel, Character>(viewModel, characterToUptate);
                 character.Planet = planet ?? character.Planet;
                 character.Race = race ?? character.Race;
                 character.HairColor = hairColor ?? character.HairColor;
                 character.EyeColor = eyeColor ?? character.EyeColor;
                 character.Movies = movies;
 
-                _context.Update(characterToUptate);
-                await _context.SaveChangesAsync();
+                _unitOfWork.CharacterRepository.Update(characterToUptate);
+                _unitOfWork.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -221,41 +213,37 @@ public class HomeController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        viewModel.PlanetList = await _context.Planet.Select(p => p.Name).ToListAsync();
-        viewModel.RaceList = await _context.Race.Select(r => r.Name).ToListAsync();
-        viewModel.HairColorList = await _context.HairColor.Select(h => h.Name).ToListAsync();
-        viewModel.EyeColorList = await _context.EyeColor.Select(e => e.Name).ToListAsync();
-        viewModel.MoviesList = await _context.Movie.Select(m => m.Title).ToListAsync();
+        viewModel.PlanetList = _unitOfWork.PlanetRepository.Get().Select(p => p.Name).ToList();
+        viewModel.RaceList = _unitOfWork.RaceRepository.Get().Select(r => r.Name).ToList();
+        viewModel.HairColorList = _unitOfWork.HairColorRepository.Get().Select(h => h.Name).ToList();
+        viewModel.EyeColorList = _unitOfWork.EyeColorRepository.Get().Select(e => e.Name).ToList();
+        viewModel.MoviesList = _unitOfWork.MovieRepository.Get().Select(m => m.Title).ToList();
 
         return View(viewModel);
     }
 
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(string name)
+    public IActionResult DeleteConfirmed(string name)
     {
         if (name == null)
         {
             return NotFound();
         }
 
-        if (_context.Character == null)
-        {
-            return Problem($"Entity set ${typeof(Character)} is null.");
-        }
-        var character = await _context.Character.SingleOrDefaultAsync(c => c.Name.Equals(name));
+        var character = _unitOfWork.CharacterRepository.SingleOrDefault(c => c.Name.Equals(name));
         if (character != null)
         {
-            _context.Character.Remove(character);
+            _unitOfWork.CharacterRepository.Delete(character);
         }
 
-        await _context.SaveChangesAsync();
+        _unitOfWork.Save();
         return RedirectToAction(nameof(Index));
     }
 
     private bool CharacterExists(string name)
     {
-        return (_context.Character?.Any(e => e.Name.Equals(name))).GetValueOrDefault();
+        return _unitOfWork.CharacterRepository.SingleOrDefault(c => c.Name.Equals(name)) is not null;
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
