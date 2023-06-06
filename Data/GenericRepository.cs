@@ -1,9 +1,7 @@
-using System.Collections;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using StarWars.Data;
 
-namespace StarWars.Repositories;
+namespace StarWars.Data;
 
 public class GenericRepository<TEntity> where TEntity : class
 {
@@ -86,7 +84,7 @@ public class GenericRepository<TEntity> where TEntity : class
 
     public virtual void Delete(TEntity entityToDelete)
     {
-        if (_context.Entry(entityToDelete).State == EntityState.Detached)
+        if (_context.Entry(entityToDelete).State is EntityState.Detached)
         {
             dbSet.Attach(entityToDelete);
         }

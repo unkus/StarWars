@@ -1,7 +1,6 @@
-using StarWars.Data;
 using StarWars.Models;
 
-namespace StarWars.Repositories;
+namespace StarWars.Data;
 
 public class UnitOfWork
 {
@@ -92,8 +91,8 @@ public class UnitOfWork
         }
     }
 
-    public void Save()
+    public async Task<int> Save()
     {
-        _context.SaveChanges();
+        return await _context.SaveChangesAsync();
     }
 }
