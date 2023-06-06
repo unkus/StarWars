@@ -14,7 +14,7 @@ public class GenericRepository<TEntity> where TEntity : class
         dbSet = context.Set<TEntity>();
     }
 
-    private IQueryable<TEntity> addFilter(IQueryable<TEntity> query, Expression<Func<TEntity, bool>>? filter)
+    protected IQueryable<TEntity> addFilter(IQueryable<TEntity> query, Expression<Func<TEntity, bool>>? filter)
     {
         if (filter is not null)
         {
@@ -23,16 +23,7 @@ public class GenericRepository<TEntity> where TEntity : class
         return query;
     }
 
-    private IQueryable<TEntity> addOrderBy(IQueryable<TEntity> query, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null)
-    {
-        if (orderBy is not null)
-        {
-            query = orderBy(query);
-        }
-        return query;
-    }
-
-    private IQueryable<TEntity> addIncludes(IQueryable<TEntity> query, IEnumerable<string>? includes = null)
+    protected IQueryable<TEntity> addIncludes(IQueryable<TEntity> query, IEnumerable<string>? includes)
     {
         if (includes is not null)
         {
@@ -44,9 +35,21 @@ public class GenericRepository<TEntity> where TEntity : class
         return query;
     }
 
-    public virtual IEnumerable<TEntity> Get(
+    public virtual async Task<IEnumerable<TEntity>> GetAsync(
             Expression<Func<TEntity, bool>>? filter = null,
-            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
+            IEnumerable<string>? includes = null)
+    {
+        IQueryable<TEntity> query = dbSet;
+
+        query = addFilter(query, filter);
+
+        query = addIncludes(query, includes);
+        
+        return await query.ToListAsync();
+    }
+
+    public virtual async Task<TEntity?> SingleOrDefaultAsync(
+            Expression<Func<TEntity, bool>>? filter = null,
             IEnumerable<string>? includes = null)
     {
         IQueryable<TEntity> query = dbSet;
@@ -55,20 +58,7 @@ public class GenericRepository<TEntity> where TEntity : class
 
         query = addIncludes(query, includes);
 
-        query = addOrderBy(query, orderBy);
-
-        return query.ToList();
-    }
-
-    public virtual TEntity? SingleOrDefault(
-            Expression<Func<TEntity, bool>>? filter = null,
-            IEnumerable<string>? includes = null)
-    {
-        IQueryable<TEntity> query = dbSet;
-
-        query = addIncludes(query, includes);
-
-        return filter is not null ? query.SingleOrDefault(filter) : query.SingleOrDefault();
+        return await query.SingleOrDefaultAsync();
     }
 
     public virtual void Insert(TEntity entity)
@@ -78,8 +68,11 @@ public class GenericRepository<TEntity> where TEntity : class
 
     public virtual void Delete(object id)
     {
-        TEntity entityToDelete = dbSet.Find(id);
-        Delete(entityToDelete);
+        TEntity? entityToDelete = dbSet.Find(id);
+        if(entityToDelete is not null)
+        {
+            Delete(entityToDelete);
+        }
     }
 
     public virtual void Delete(TEntity entityToDelete)

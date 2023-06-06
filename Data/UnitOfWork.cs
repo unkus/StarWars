@@ -4,25 +4,31 @@ namespace StarWars.Data;
 
 public class UnitOfWork
 {
-    private GenericRepository<Character> characterRepository;
-    private GenericRepository<Planet> planetRepository;
-    private GenericRepository<Race> raceRepository;
-    private GenericRepository<HairColor> hairColorRepository;
-    private GenericRepository<EyeColor> eyeColorRepository;
-    private GenericRepository<Movie> movieRepository;
+    private Lazy<GenericRepository<Character>> _characterRepository;
+    private Lazy<GenericRepository<Planet>> _planetRepository;
+    private Lazy<GenericRepository<Race>> _raceRepository;
+    private Lazy<GenericRepository<HairColor>> _hairColorRepository;
+    private Lazy<GenericRepository<EyeColor>> _eyeColorRepository;
+    // Другой путь инициализации. 
+    // TODO: Какой продуктивнее?
+    private GenericRepository<Movie> _movieRepository;
+    private StarWarsContext? _context;
 
-    internal StarWarsContext _context;
+    public UnitOfWork(StarWarsContext context) {
+        _context = context;
+
+        _characterRepository = new Lazy<GenericRepository<Character>>(() => new GenericRepository<Character>(context));
+        _planetRepository = new Lazy<GenericRepository<Planet>>(() => new GenericRepository<Planet>(context));
+        _raceRepository = new Lazy<GenericRepository<Race>>(() => new GenericRepository<Race>(context));
+        _hairColorRepository = new Lazy<GenericRepository<HairColor>>(() => new GenericRepository<HairColor>(context));
+        _eyeColorRepository = new Lazy<GenericRepository<EyeColor>>(() => new GenericRepository<EyeColor>(context));
+    }
 
     public GenericRepository<Character> CharacterRepository
     {
         get
         {
-
-            if (this.characterRepository == null)
-            {
-                this.characterRepository = new GenericRepository<Character>(_context);
-            }
-            return characterRepository;
+            return _characterRepository.Value;
         }
     }
 
@@ -30,12 +36,7 @@ public class UnitOfWork
     {
         get
         {
-
-            if (this.planetRepository == null)
-            {
-                this.planetRepository = new GenericRepository<Planet>(_context);
-            }
-            return planetRepository;
+            return _planetRepository.Value;
         }
     }
 
@@ -43,12 +44,7 @@ public class UnitOfWork
     {
         get
         {
-
-            if (this.raceRepository == null)
-            {
-                this.raceRepository = new GenericRepository<Race>(_context);
-            }
-            return raceRepository;
+            return _raceRepository.Value;
         }
     }
 
@@ -56,12 +52,7 @@ public class UnitOfWork
     {
         get
         {
-
-            if (this.hairColorRepository == null)
-            {
-                this.hairColorRepository = new GenericRepository<HairColor>(_context);
-            }
-            return hairColorRepository;
+            return _hairColorRepository.Value;
         }
     }
 
@@ -69,12 +60,7 @@ public class UnitOfWork
     {
         get
         {
-
-            if (this.eyeColorRepository == null)
-            {
-                this.eyeColorRepository = new GenericRepository<EyeColor>(_context);
-            }
-            return eyeColorRepository;
+            return _eyeColorRepository.Value;
         }
     }
 
@@ -82,16 +68,11 @@ public class UnitOfWork
     {
         get
         {
-
-            if (this.movieRepository == null)
-            {
-                this.movieRepository = new GenericRepository<Movie>(_context);
-            }
-            return movieRepository;
+            return _movieRepository = _movieRepository ?? new GenericRepository<Movie>(_context);
         }
     }
 
-    public async Task<int> Save()
+    public async Task<int> SaveAsync()
     {
         return await _context.SaveChangesAsync();
     }
