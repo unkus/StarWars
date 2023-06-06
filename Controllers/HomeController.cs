@@ -5,7 +5,6 @@ using StarWars.Data;
 using StarWars.Models;
 using StarWars.ViewModels;
 using AutoMapper;
-using StarWars.Repositories;
 
 namespace StarWars.Controllers;
 
@@ -24,12 +23,12 @@ public class HomeController : Controller
     }
 
     // GET: Index
-    public async Task<IActionResult> Index(IndexViewModel viewModel)
+    public IActionResult Index(IndexViewModel viewModel)
     {
         viewModel.PlanetList = _unitOfWork.PlanetRepository.Get().Select(p => p.Name).ToList();
         viewModel.MovieList = _unitOfWork.MovieRepository.Get().Select(m => m.Title).ToList();
 
-        if (viewModel.Gender == null)
+        if (viewModel.Gender is null)
         {
             ModelState.ClearValidationState(nameof(IndexViewModel.Gender));
             ModelState.MarkFieldSkipped(nameof(IndexViewModel.Gender));
@@ -59,9 +58,9 @@ public class HomeController : Controller
     }
 
     // GET: Details
-    public async Task<IActionResult> Details(string name)
+    public IActionResult Details(string name)
     {
-        if (name == null)
+        if (name is null)
         {
             return NotFound();
         }
@@ -76,7 +75,7 @@ public class HomeController : Controller
                     nameof(Character.Movies)
                 }
             );
-        if (character == null)
+        if (character is null)
         {
             return NotFound();
         }
@@ -85,7 +84,7 @@ public class HomeController : Controller
     }
 
     // GET: Create
-    public async Task<IActionResult> Create()
+    public IActionResult Create()
     {
         return View(new CreateViewModel()
         {
@@ -123,7 +122,7 @@ public class HomeController : Controller
 
             _unitOfWork.CharacterRepository.Insert(character);
 
-            _unitOfWork.Save();
+            await _unitOfWork.Save();
             return RedirectToAction(nameof(Index));
         }
 
@@ -136,15 +135,15 @@ public class HomeController : Controller
     }
 
     // GET: Edit
-    public async Task<IActionResult> Edit(string name)
+    public IActionResult Edit(string name)
     {
-        if (name == null)
+        if (name is null)
         {
             return NotFound();
         }
 
         var character = _unitOfWork.CharacterRepository.SingleOrDefault(c => c.Name.Equals(name));
-        if (character == null)
+        if (character is null)
         {
             return NotFound();
         }
@@ -164,7 +163,7 @@ public class HomeController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(string? name, EditViewModel viewModel)
     {
-        if (name == null)
+        if (name is null)
         {
             return NotFound();
         }
@@ -197,7 +196,7 @@ public class HomeController : Controller
                 character.Movies = movies;
 
                 _unitOfWork.CharacterRepository.Update(characterToUptate);
-                _unitOfWork.Save();
+                await _unitOfWork.Save();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -224,21 +223,22 @@ public class HomeController : Controller
 
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
-    public IActionResult DeleteConfirmed(string name)
+    public async Task<IActionResult> DeleteConfirmed(string name)
     {
-        if (name == null)
+        if (name is null)
         {
             return NotFound();
         }
 
         var character = _unitOfWork.CharacterRepository.SingleOrDefault(c => c.Name.Equals(name));
-        if (character != null)
+        if (character is not null)
         {
             _unitOfWork.CharacterRepository.Delete(character);
+            await _unitOfWork.Save();
+            return RedirectToAction(nameof(Index));
         }
 
-        _unitOfWork.Save();
-        return RedirectToAction(nameof(Index));
+        return View();
     }
 
     private bool CharacterExists(string name)
