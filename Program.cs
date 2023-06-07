@@ -11,6 +11,8 @@ if (builder.Environment.IsDevelopment())
 {
     builder.Services.AddDbContext<StarWarsContext>(options =>
         options.UseSqlite(builder.Configuration.GetConnectionString("StarWarsContext") ?? throw new InvalidOperationException("Connection string 'StarWarsContext' not found.")));
+    
+    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 }
 else
 {
