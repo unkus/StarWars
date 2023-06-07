@@ -4,6 +4,8 @@ namespace StarWars.Data;
 
 public class UnitOfWork
 {
+    // Isn't the same thing being done in StarWarsContext? Is this relevant for the latest version of EF?
+
     private Lazy<GenericRepository<Character>> _characterRepository;
     private Lazy<GenericRepository<Planet>> _planetRepository;
     private Lazy<GenericRepository<Race>> _raceRepository;
@@ -11,7 +13,7 @@ public class UnitOfWork
     private Lazy<GenericRepository<EyeColor>> _eyeColorRepository;
     // Другой путь инициализации. 
     // TODO: Какой продуктивнее?
-    private GenericRepository<Movie> _movieRepository;
+    private GenericRepository<Movie>? _movieRepository;
     private StarWarsContext? _context;
 
     public UnitOfWork(StarWarsContext context) {
@@ -26,50 +28,32 @@ public class UnitOfWork
 
     public GenericRepository<Character> CharacterRepository
     {
-        get
-        {
-            return _characterRepository.Value;
-        }
+        get => _characterRepository.Value;
     }
 
     public GenericRepository<Planet> PlanetRepository
     {
-        get
-        {
-            return _planetRepository.Value;
-        }
+        get => _planetRepository.Value;
     }
 
     public GenericRepository<Race> RaceRepository
     {
-        get
-        {
-            return _raceRepository.Value;
-        }
+        get => _raceRepository.Value;
     }
 
     public GenericRepository<HairColor> HairColorRepository
     {
-        get
-        {
-            return _hairColorRepository.Value;
-        }
+        get => _hairColorRepository.Value;
     }
 
     public GenericRepository<EyeColor> EyeColorRepository
     {
-        get
-        {
-            return _eyeColorRepository.Value;
-        }
+        get => _eyeColorRepository.Value;
     }
 
     public GenericRepository<Movie> MovieRepository
     {
-        get
-        {
-            return _movieRepository = _movieRepository ?? new GenericRepository<Movie>(_context);
-        }
+        get => _movieRepository = _movieRepository ?? new GenericRepository<Movie>(_context);
     }
 
     public async Task<int> SaveAsync()
