@@ -19,6 +19,7 @@ public class HomeController : Controller
     {
         _logger = logger;
         _mapping = mapping;
+        // I think StarWarsContext would be enough. Isn't DbContext implement Unit Of Work pattern?
         _unitOfWork = unitOfWork;
     }
 
