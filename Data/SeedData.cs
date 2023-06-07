@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using StarWars.Data;
+using StarWars.Models;
 
-namespace StarWars.Models
-{
+namespace StarWars.Data;
+
     public static class SeedData
     {
         public static void Initialize(IServiceProvider serviceProvider)
@@ -145,4 +145,3 @@ namespace StarWars.Models
             }
         }
     }
-}
