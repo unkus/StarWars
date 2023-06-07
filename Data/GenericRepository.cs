@@ -5,6 +5,9 @@ namespace StarWars.Data;
 
 public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
 {
+    // Is such wrapper over StarWarsContext really needed?
+    // Could this be the case in EF 6 and later versions?
+
     internal StarWarsContext _context;
     internal DbSet<TEntity> dbSet;
 
