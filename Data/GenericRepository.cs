@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace StarWars.Data;
 
-public class GenericRepository<TEntity> where TEntity : class
+public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
 {
     internal StarWarsContext _context;
     internal DbSet<TEntity> dbSet;

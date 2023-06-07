@@ -13,13 +13,13 @@ public class HomeController : Controller
     private readonly ILogger<HomeController> _logger;
     private readonly IMapper _mapping;
 
-    private UnitOfWork _unitOfWork;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public HomeController(ILogger<HomeController> logger, StarWarsContext context, IMapper mapping)
+    public HomeController(ILogger<HomeController> logger, IUnitOfWork unitOfWork, IMapper mapping)
     {
         _logger = logger;
         _mapping = mapping;
-        _unitOfWork = new UnitOfWork(context);
+        _unitOfWork = unitOfWork;
     }
 
     // GET: Index

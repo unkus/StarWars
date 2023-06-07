@@ -2,7 +2,7 @@ using StarWars.Models;
 
 namespace StarWars.Data;
 
-public class UnitOfWork
+public class UnitOfWork : IUnitOfWork
 {
     // Isn't the same thing being done in StarWarsContext? Is this relevant for the latest version of EF?
 
@@ -26,32 +26,32 @@ public class UnitOfWork
         _eyeColorRepository = new Lazy<GenericRepository<EyeColor>>(() => new GenericRepository<EyeColor>(context));
     }
 
-    public GenericRepository<Character> CharacterRepository
+    public IGenericRepository<Character> CharacterRepository
     {
         get => _characterRepository.Value;
     }
 
-    public GenericRepository<Planet> PlanetRepository
+    public IGenericRepository<Planet> PlanetRepository
     {
         get => _planetRepository.Value;
     }
 
-    public GenericRepository<Race> RaceRepository
+    public IGenericRepository<Race> RaceRepository
     {
         get => _raceRepository.Value;
     }
 
-    public GenericRepository<HairColor> HairColorRepository
+    public IGenericRepository<HairColor> HairColorRepository
     {
         get => _hairColorRepository.Value;
     }
 
-    public GenericRepository<EyeColor> EyeColorRepository
+    public IGenericRepository<EyeColor> EyeColorRepository
     {
         get => _eyeColorRepository.Value;
     }
 
-    public GenericRepository<Movie> MovieRepository
+    public IGenericRepository<Movie> MovieRepository
     {
         get => _movieRepository = _movieRepository ?? new GenericRepository<Movie>(_context);
     }
